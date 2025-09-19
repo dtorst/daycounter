@@ -36,6 +36,15 @@ export default {
       reason: "alive",
     }
   },
+  mounted() {
+    this.restoreSelections();
+  },
+  watch: {
+    selectedYear() { this.saveSelections(); },
+    selectedMonth() { this.saveSelections(); },
+    selectedDay() { this.saveSelections(); },
+    reason() { this.saveSelections(); },
+  },
   computed: {
 
     years() {
@@ -66,6 +75,34 @@ export default {
     },
   },
   methods: {
+    saveSelections() {
+      try {
+        const payload = {
+          reason: String(this.reason ?? ''),
+          selectedMonth: String(this.selectedMonth ?? ''),
+          selectedDay: String(this.selectedDay ?? ''),
+          selectedYear: String(this.selectedYear ?? ''),
+        };
+        localStorage.setItem('daycounterSelections', JSON.stringify(payload));
+      } catch (e) {
+        // ignore storage errors
+      }
+    },
+    restoreSelections() {
+      try {
+        const raw = localStorage.getItem('daycounterSelections');
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data && typeof data === 'object') {
+          if (typeof data.reason === 'string') this.reason = data.reason;
+          if (typeof data.selectedMonth === 'string' || typeof data.selectedMonth === 'number') this.selectedMonth = data.selectedMonth;
+          if (typeof data.selectedDay === 'string' || typeof data.selectedDay === 'number') this.selectedDay = data.selectedDay;
+          if (typeof data.selectedYear === 'string' || typeof data.selectedYear === 'number') this.selectedYear = data.selectedYear;
+        }
+      } catch (e) {
+        // ignore corrupt payloads
+      }
+    },
     calculateDays() {
       let selectedDate = new Date(`${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}`);
       let currentDate = new Date();
