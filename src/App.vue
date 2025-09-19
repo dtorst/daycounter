@@ -51,15 +51,87 @@ export default {
 }
 
 </script>
-<style scoped>
-/* Limit styles to this component only to avoid global overrides */
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@100..900&display=swap');
+
+@font-face {
+  font-family: 'Sugar Peachy';
+  src: url('assets/sugar-peachy.otf') format('opentype');
+  font-style: normal;
+  font-display: block;
+}
+
+/* override browser default */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+/* use viewport-relative units to cover page fully */
+body {
+  height: 100vh;
+  width: 100vw;
+}
+
+
+/* include border and padding in element width and height */
+* {
+  box-sizing: border-box;
+}
+
+
+h1 {
+  color: #E9E9E9;
+  text-align: center;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  font-family: 'Sugar Peachy';
+  font-size: 60px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 60px; /* 100% */
+  margin:8px;
+}
+h3 {
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  font-family: 'Montserrat',sans-serif;
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 49px; /* 188.462% */
+  letter-spacing: 0.25px;
+}
+
+@property --myColor1 {
+  syntax: '<color>';
+  initial-value: #BE4405;
+  inherits: false;
+}
+
+@property --myColor2 {
+  syntax: '<color>';
+  initial-value: #F6C60C;
+  inherits: false;
+}
 
 #container {
   position: relative;
-  z-index: 10;
+  z-index:10;
   overflow: hidden;
-  top: 0;
-  clear: both;
+  top:0px;
+  clear:both;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(var(--myColor1), var(--myColor2));
+  transition: --myColor1 3s, --myColor2 3s;
+}
+
+
+#container.night {
+  --myColor1: #111936;
+  --myColor2: #285A7B;
 }
 
 .interactable {
@@ -72,17 +144,22 @@ export default {
 .readout {
   text-align: center;
   align-content: center;
-}
-
+} 
 .calculate-days, .update-button {
-  height: 36px;
-  width: 96px;
+  height:36px;
+  width:96px;
+  border:2px solid #F2EF88;
+  color:#F2EF88;
+  background: rgba(242,239,136,0);
   cursor: pointer;
-  border-radius: 20px;
-  line-height: 30px;
+  border-radius:20px;
+  transition-duration: 2s;
+  line-height:30px;
 }
 
 .update-button {
-  float: right;
+  float:right;
 }
+
+
 </style>
