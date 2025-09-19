@@ -1,6 +1,6 @@
 {
-  "name": "betterscroll",
-  "version": "0.1.0",
+  "name": "Daycounter",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,8 +8,13 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@better-scroll/core": "^2.5.1",
+    "@mvpleung/flipclock": "^0.0.6",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "firebase": "^10.13.0",
+    "vue": "^3.2.13",
+    "vue-router": "^4.4.3",
+    "vue-scroll-picker": "^1.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -18,7 +23,9 @@
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "node-sass": "^9.0.0",
+    "sass-loader": "^16.0.0"
   },
   "eslintConfig": {
     "root": true,
