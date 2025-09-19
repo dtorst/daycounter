@@ -162,4 +162,9 @@ h3 {
 }
 
 
+/* Force FlipClock digit background to #333 in all environments */
+.flip-clock-wrapper ul li a div div.inn {
+  background: #333 !important;
+}
+
 </style>

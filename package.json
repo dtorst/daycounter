@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@better-scroll/core": "^2.5.1",
-    "@mvpleung/flipclock": "^0.0.6",
+    "@mvpleung/flipclock": "0.0.6",
     "core-js": "^3.8.3",
     "firebase": "^10.13.0",
     "vue": "^3.2.13",
