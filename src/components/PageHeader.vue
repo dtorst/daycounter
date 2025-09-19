@@ -24,7 +24,7 @@ export default {
 	}
 }
 </script>
-<style>
+<style scoped>
 header {
   display:block;
   height:60px;
