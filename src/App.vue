@@ -38,13 +38,30 @@ export default {
   data() {
     return {
       daysSince: null,
+      reason: null,
       today: new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"long", day:"numeric"}),
     }
+  },
+  mounted() {
+    this.restoreDayCount();
   },
   methods: {
    updateDays({days,why}) {
      this.daysSince = days;
      this.reason = why;
+   },
+   restoreDayCount() {
+     try {
+       const raw = localStorage.getItem('daycounterDayCount');
+       if (!raw) return;
+       const data = JSON.parse(raw);
+       if (data && typeof data === 'object' && typeof data.days === 'number' && typeof data.why === 'string') {
+         this.daysSince = data.days;
+         this.reason = data.why;
+       }
+     } catch (e) {
+       // ignore corrupt payloads
+     }
    }
  }
 

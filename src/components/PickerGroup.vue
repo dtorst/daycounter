@@ -103,11 +103,35 @@ export default {
         // ignore corrupt payloads
       }
     },
+    saveDayCount(dayCountData) {
+      try {
+        localStorage.setItem('daycounterDayCount', JSON.stringify(dayCountData));
+      } catch (e) {
+        // ignore storage errors
+      }
+    },
+    restoreDayCount() {
+      try {
+        const raw = localStorage.getItem('daycounterDayCount');
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data && typeof data === 'object' && typeof data.days === 'number' && typeof data.why === 'string') {
+          return data;
+        }
+      } catch (e) {
+        // ignore corrupt payloads
+      }
+      return null;
+    },
     calculateDays() {
       let selectedDate = new Date(`${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}`);
       let currentDate = new Date();
       let offset = ((currentDate.getTimezoneOffset()) - (selectedDate.getTimezoneOffset())) * 60000;
       let days = Math.floor((currentDate - selectedDate - offset) / 86400000);
+      
+      // Save the dayCount data to localStorage
+      this.saveDayCount({ 'days': days, 'why': this.reason });
+      
       this.$emit('dayCount', { 'days':days, 'why': this.reason });
     }
   },
