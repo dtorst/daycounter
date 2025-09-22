@@ -38,6 +38,8 @@ export default {
   data() {
     return {
       daysSince: null,
+      todaysDay: null,
+      currentComponent: null,
       reason: null,
       today: new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"long", day:"numeric"}),
     }
@@ -49,6 +51,13 @@ export default {
    updateDays({days,why}) {
      this.daysSince = days;
      this.reason = why;
+     this.currentComponent = 'PickerGroup';
+   },
+   isDateToday() {
+    if (this.today) {
+      return true;
+    }
+    return false;
    },
    restoreDayCount() {
      try {
