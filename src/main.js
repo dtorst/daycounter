@@ -1,6 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
+// Vuetify
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import '@mdi/font/css/materialdesignicons.css'
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
@@ -24,4 +31,25 @@ initializeApp(firebaseConfig);
 // eslint-disable-next-line
 // const analytics = getAnalytics(app);
 
-createApp(App).mount('#app')
+// Configure Vuetify with minimal theme to avoid conflicts
+const vuetify = createVuetify({
+  components,
+  directives,
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: {
+        colors: {
+          // Use your existing color scheme
+          primary: '#F2EF88',
+          secondary: '#BE4405',
+          accent: '#F6C60C',
+        }
+      }
+    }
+  }
+})
+
+const app = createApp(App)
+app.use(vuetify)
+app.mount('#app')

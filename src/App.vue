@@ -1,29 +1,33 @@
 <template>  
-  <div id="container" :class="{ night: !daysSince }">
-    <FireworksDisplay v-if="todaysDay" />
-    <PageHeader :buttonDisplay="daysSince" @buttonClicked="daysSince = null" />
-    <div class="interactable">
-      <div class="readout" v-if="daysSince">
-        <h3 style="margin-bottom:0px;">It's {{today}} </h3>
-        <h1 style="margin-top:0px;">you&#8217;ve been {{reason}} for </h1>
-        <flip-clock :options="{clockFace: 'Counter',autoStart: false,digit: daysSince}" />
-        <h1>days</h1>
+  <VApp>
+    <DrawerComponent v-model="drawer" @navigate="handleNavigation" />
+    <VMain>
+      <div id="container" :class="{ night: !daysSince }">
+        <FireworksDisplay v-if="todaysDay" />
+        <PageHeader :buttonDisplay="daysSince" @buttonClicked="daysSince = null" @openDrawer="openDrawer" />
+        <div class="interactable">
+          <div class="readout mt-6" v-if="daysSince">
+            <h3 style="margin-bottom:0px;">It's {{today}} </h3>
+            <h1 style="margin-top:0px;">you&#8217;ve been {{reason}} for </h1>
+            <flip-clock :options="flipOptions" />
+            <h1>days</h1>
+          </div>
+          <KeepAlive>
+            <PickerGroup :is="currentComponent" v-if="!daysSince" @dayCount="updateDays" />
+          </KeepAlive>
+        </div>
+        <PageScenery :rayDisplay="daysSince" />
       </div>
-      <KeepAlive>
-        <PickerGroup :is="currentComponent" v-if="!daysSince" @dayCount="updateDays" />
-      </KeepAlive>
-    </div>
-    <PageScenery :rayDisplay="daysSince" />
-
-  </div>
+    </VMain>
+  </VApp>
 </template>
 <script>
 import { FlipClock } from '@mvpleung/flipclock';
 import PageScenery from './components/Scenery'
 import FireworksDisplay from './components/Fireworks'
 import PageHeader from './components/PageHeader'
-import PickerGroup from './components/PickerGroup'
-
+import PickerGroup from './components/PickerGroup'  
+import DrawerComponent from './components/Drawer'
 
 
 export default {
@@ -31,33 +35,79 @@ export default {
     FlipClock,
     PageScenery,
     FireworksDisplay,
+    DrawerComponent,
     PageHeader,
     PickerGroup
+  },
+  computed: {
+    flipOptions() {
+      return {
+        clockFace: 'Counter',
+        autoStart: false,
+        digit: this.daysSince
+      }
+    }
   },
 
   data() {
     return {
       daysSince: null,
-      todaysDay: null,
+      todaysDay: false,
       currentComponent: null,
       reason: null,
       today: new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"long", day:"numeric"}),
+      drawer: false
     }
   },
   mounted() {
     this.restoreDayCount();
+    this.updateTodaysDayFromSelections();
   },
   methods: {
    updateDays({days,why}) {
      this.daysSince = days;
      this.reason = why;
      this.currentComponent = 'PickerGroup';
+     this.updateTodaysDayFromSelections();
    },
    isDateToday() {
     if (this.today) {
       return true;
     }
     return false;
+   },
+   openDrawer() {
+    this.drawer = true;
+   },
+   updateTodaysDayFromSelections() {
+     try {
+       const now = new Date();
+       const todayMonth = now.getMonth() + 1; // 1-12
+       const todayDay = now.getDate(); // 1-31
+
+       const raw = localStorage.getItem('daycounterSelections');
+       if (!raw) {
+         this.todaysDay = false;
+         return;
+       }
+
+       const data = JSON.parse(raw);
+       const selectedMonth = Number(
+         data && (data.selectedMonth !== undefined ? data.selectedMonth : data.month)
+       );
+       const selectedDay = Number(
+         data && (data.selectedDay !== undefined ? data.selectedDay : data.day)
+       );
+
+       this.todaysDay = (
+         Number.isFinite(selectedMonth) &&
+         Number.isFinite(selectedDay) &&
+         selectedMonth === todayMonth &&
+         selectedDay === todayDay
+       );
+     } catch (e) {
+       this.todaysDay = false;
+     }
    },
    restoreDayCount() {
      try {
@@ -71,6 +121,10 @@ export default {
      } catch (e) {
        // ignore corrupt payloads
      }
+   },
+   handleNavigation(route) {
+    this.drawer = false;
+    this.$router.push(route);
    }
  }
 
@@ -87,43 +141,44 @@ export default {
   font-display: block;
 }
 
-/* override browser default */
-html,
-body {
+/* Override Vuetify's default styles for our custom app */
+#app {
   margin: 0;
   padding: 0;
   font-size: 16px;
-}
-
-/* use viewport-relative units to cover page fully */
-body {
   height: 100vh;
   width: 100vw;
-}
-
-
-/* include border and padding in element width and height */
-* {
   box-sizing: border-box;
 }
 
+/* Reset Vuetify's default styles that might interfere */
+#app * {
+  box-sizing: border-box;
+}
 
-h1 {
-  color: #E9E9E9;
+/* Ensure our custom styles take precedence over Vuetify */
+#app .v-application {
+  font-family: inherit !important;
+  background: transparent !important;
+}
+
+
+#app h1 {
+  color: #E9E9E9 !important;
   text-align: center;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  font-family: 'Sugar Peachy';
-  font-size: 60px;
+  font-family: 'Sugar Peachy' !important;
+  font-size: 60px !important;
   font-style: normal;
   font-weight: 900;
   line-height: 60px; /* 100% */
   margin:8px;
 }
-h3 {
-  color: rgba(255, 255, 255, 0.75);
+#app h3 {
+  color: rgba(255, 255, 255, 0.75) !important;
   text-align: center;
-  font-family: 'Montserrat',sans-serif;
-  font-size: 26px;
+  font-family: 'Montserrat',sans-serif !important;
+  font-size: 26px !important;
   font-style: normal;
   font-weight: 400;
   line-height: 49px; /* 188.462% */
@@ -171,19 +226,23 @@ h3 {
   text-align: center;
   align-content: center;
 } 
-.calculate-days, .update-button {
-  height:36px;
-  width:96px;
-  border:2px solid #F2EF88;
-  color:#F2EF88;
-  background: rgba(242,239,136,0);
+#app .calculate-days, #app .update-button {
+  height:36px !important;
+  width:96px !important;
+  border:2px solid #F2EF88 !important;
+  color:#F2EF88 !important;
+  background: rgba(242,239,136,0) !important;
   cursor: pointer;
-  border-radius:20px;
+  border-radius:20px !important;
   transition-duration: 2s;
-  line-height:30px;
+  line-height:30px !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  text-transform: none !important;
+  box-shadow: none !important;
 }
 
-.update-button {
+#app .update-button {
   float:right;
 }
 

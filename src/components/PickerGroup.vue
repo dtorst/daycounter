@@ -1,8 +1,9 @@
 <template>
 	<div class="picker-group">
-        <div class="reason-column">
-          <VueScrollPicker :options="reasons" v-model="reason" />
-        </div>
+		<div class="reason-column" :class="{ 'other-active': reason === 'other...' }">
+			<VueScrollPicker :options="reasons" v-model="reason" />
+			<VTextField v-if="reason === 'other...'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other..." />
+		</div>
         <div class="since-column">
           <span class="since">since</span>
         </div>
@@ -34,16 +35,29 @@ export default {
       selectedMonth: 6,
       selectedDay: 15,
       reason: "alive",
+      otherReason: "",
     }
   },
   mounted() {
-    this.restoreSelections();
+    const appliedFromUrl = this.applySelectionsFromUrl();
+    if (!appliedFromUrl) {
+      this.restoreSelections();
+    }
+    if (this.reason === 'other...') {
+      this.focusOtherInput();
+    }
   },
   watch: {
     selectedYear() { this.saveSelections(); },
     selectedMonth() { this.saveSelections(); },
     selectedDay() { this.saveSelections(); },
-    reason() { this.saveSelections(); },
+    reason(newVal) {
+      this.saveSelections();
+      if (newVal === 'other...') {
+        this.focusOtherInput();
+      }
+    },
+    otherReason() { this.saveSelections(); },
   },
   computed: {
 
@@ -71,14 +85,27 @@ export default {
       return Array.from({ length: lastDay }, (_, index) => index + 1)
     },
     reasons() {
-      return Array('married','alive','a parent','a grandparent','sober')
+      return Array('married','alive','a parent','a grandparent','sober','born again','other...')
     },
   },
   methods: {
+    focusOtherInput() {
+      this.$nextTick(() => {
+        const ref = this.$refs.otherInput;
+        if (ref && typeof ref.focus === 'function') {
+          ref.focus();
+          return;
+        }
+        const el = ref && ref.$el ? ref.$el : null;
+        const input = el && el.querySelector ? el.querySelector('input') : null;
+        if (input) input.focus();
+      });
+    },
     saveSelections() {
       try {
         const payload = {
           reason: String(this.reason ?? ''),
+          otherReason: String(this.otherReason ?? ''),
           selectedMonth: String(this.selectedMonth ?? ''),
           selectedDay: String(this.selectedDay ?? ''),
           selectedYear: String(this.selectedYear ?? ''),
@@ -88,6 +115,58 @@ export default {
         // ignore storage errors
       }
     },
+    applySelectionsFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search || '');
+        if (!params || Array.from(params.keys()).length === 0) return false;
+
+        let anySet = false;
+
+        const reasonParam = params.get('reason');
+        const otherReasonParam = params.get('otherReason') || params.get('other');
+        const sm = params.get('selectedMonth') || params.get('selectedmonth') || params.get('month');
+        const sd = params.get('selectedDay') || params.get('selectedday') || params.get('day');
+        const sy = params.get('selectedYear') || params.get('selectedyear') || params.get('year');
+
+        if (reasonParam && typeof reasonParam === 'string') {
+          const normalized = reasonParam.trim();
+          this.reason = normalized;
+          if (normalized === 'other...' && typeof otherReasonParam === 'string') {
+            this.otherReason = otherReasonParam.trim();
+          }
+          anySet = true;
+        }
+
+        if (sm !== null && sm !== undefined && sm !== '') {
+          const n = Number(sm);
+          if (Number.isFinite(n) && n >= 1 && n <= 12) {
+            this.selectedMonth = n;
+            anySet = true;
+          }
+        }
+        if (sd !== null && sd !== undefined && sd !== '') {
+          const n = Number(sd);
+          if (Number.isFinite(n) && n >= 1 && n <= 31) {
+            this.selectedDay = n;
+            anySet = true;
+          }
+        }
+        if (sy !== null && sy !== undefined && sy !== '') {
+          const n = Number(sy);
+          if (Number.isFinite(n) && n >= 1900 && n <= 3000) {
+            this.selectedYear = n;
+            anySet = true;
+          }
+        }
+
+        if (anySet) {
+          this.saveSelections();
+        }
+        return anySet;
+      } catch (e) {
+        return false;
+      }
+    },
     restoreSelections() {
       try {
         const raw = localStorage.getItem('daycounterSelections');
@@ -95,6 +174,7 @@ export default {
         const data = JSON.parse(raw);
         if (data && typeof data === 'object') {
           if (typeof data.reason === 'string') this.reason = data.reason;
+          if (typeof data.otherReason === 'string') this.otherReason = data.otherReason;
           if (typeof data.selectedMonth === 'string' || typeof data.selectedMonth === 'number') this.selectedMonth = data.selectedMonth;
           if (typeof data.selectedDay === 'string' || typeof data.selectedDay === 'number') this.selectedDay = data.selectedDay;
           if (typeof data.selectedYear === 'string' || typeof data.selectedYear === 'number') this.selectedYear = data.selectedYear;
@@ -129,10 +209,14 @@ export default {
       let offset = ((currentDate.getTimezoneOffset()) - (selectedDate.getTimezoneOffset())) * 60000;
       let days = Math.floor((currentDate - selectedDate - offset) / 86400000);
       
+      const computedReason = this.reason === 'other...'
+        ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other...')
+        : this.reason;
+
       // Save the dayCount data to localStorage
-      this.saveDayCount({ 'days': days, 'why': this.reason });
+      this.saveDayCount({ 'days': days, 'why': computedReason });
       
-      this.$emit('dayCount', { 'days':days, 'why': this.reason });
+      this.$emit('dayCount', { 'days':days, 'why': computedReason });
     }
   },
 }
@@ -158,6 +242,7 @@ export default {
 .reason-column {
   width:14.25rem;
   margin-right:3.75rem;
+  position: relative;
 }
 
 .since-column {
@@ -270,5 +355,42 @@ export default {
 .calculate-days :hover {
   font-variation-settings:
   'FILL' 1
+}
+
+/* When other is active, visually hide the selected picker item so the input appears in its place */
+.reason-column.other-active .vue-scroll-picker-item-selected {
+  color: transparent;
+}
+
+/* Overlay input styled like a picker item and centered on the selection line */
+.other-reason-input {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  padding: 0 8px;
+}
+.other-reason-input .v-field {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.other-reason-input .v-field__overlay,
+.other-reason-input .v-field__outline {
+  display: none !important;
+}
+.other-reason-input .v-field__input {
+  text-align: center;
+  font-size: 2rem;
+  font-family:'Montserrat',sans-serif;
+  font-weight:200;
+  line-height: 1.2em;
+  color: #F2EF88;
+  height: 1.2em;
+  padding: 0;
+}
+.other-reason-input input::placeholder {
+  color: #ccc;
 }
 </style>
