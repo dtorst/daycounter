@@ -125,6 +125,17 @@ export default {
         if (parsed.month != null) this.selectedMonth = parsed.month;
         if (parsed.day != null) this.selectedDay = parsed.day;
         if (parsed.year != null) this.selectedYear = parsed.year;
+        // If days are provided via URL, prime localStorage daycounterDayCount
+        if (typeof parsed.days === 'number') {
+          try {
+            const computedReason = this.reason === 'other'
+              ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other')
+              : this.reason;
+            localStorage.setItem('daycounterDayCount', JSON.stringify({ days: parsed.days, why: computedReason }));
+          } catch (e) {
+            // ignore storage errors
+          }
+        }
         persistSelections({
           reason: this.reason,
           otherReason: this.otherReason,
@@ -132,14 +143,6 @@ export default {
           day: this.selectedDay,
           year: this.selectedYear,
         });
-        
-        // If we have complete data, auto-calculate to show day mode
-        if (parsed.isComplete) {
-          this.$nextTick(() => {
-            this.calculateDays();
-          });
-        }
-        
         return true;
       } catch (e) {
         return false;
