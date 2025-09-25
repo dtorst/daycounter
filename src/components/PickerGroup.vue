@@ -1,8 +1,8 @@
 <template>
 	<div class="picker-group">
-		<div class="reason-column" :class="{ 'other-active': reason === 'other...' }">
+		<div class="reason-column" :class="{ 'other-active': reason === 'other' }">
 			<VueScrollPicker :options="reasons" v-model="reason" />
-			<VTextField v-if="reason === 'other...'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other..." />
+			<VTextField v-if="reason === 'other'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other" />
 		</div>
         <div class="since-column">
           <span class="since">since</span>
@@ -43,7 +43,7 @@ export default {
     if (!appliedFromUrl) {
       this.restoreSelections();
     }
-    if (this.reason === 'other...') {
+    if (this.reason === 'other') {
       this.focusOtherInput();
     }
   },
@@ -53,7 +53,7 @@ export default {
     selectedDay() { this.saveSelections(); },
     reason(newVal) {
       this.saveSelections();
-      if (newVal === 'other...') {
+      if (newVal === 'other') {
         this.focusOtherInput();
       }
     },
@@ -85,7 +85,7 @@ export default {
       return Array.from({ length: lastDay }, (_, index) => index + 1)
     },
     reasons() {
-      return Array('married','alive','a parent','a grandparent','sober','born again','other...')
+      return Array('married','alive','a parent','a grandparent','sober','born again','other')
     },
   },
   methods: {
@@ -117,52 +117,22 @@ export default {
     },
     applySelectionsFromUrl() {
       try {
-        const params = new URLSearchParams(window.location.search || '');
-        if (!params || Array.from(params.keys()).length === 0) return false;
-
-        let anySet = false;
-
-        const reasonParam = params.get('reason');
-        const otherReasonParam = params.get('otherReason') || params.get('other');
-        const sm = params.get('selectedMonth') || params.get('selectedmonth') || params.get('month');
-        const sd = params.get('selectedDay') || params.get('selectedday') || params.get('day');
-        const sy = params.get('selectedYear') || params.get('selectedyear') || params.get('year');
-
-        if (reasonParam && typeof reasonParam === 'string') {
-          const normalized = reasonParam.trim();
-          this.reason = normalized;
-          if (normalized === 'other...' && typeof otherReasonParam === 'string') {
-            this.otherReason = otherReasonParam.trim();
-          }
-          anySet = true;
-        }
-
-        if (sm !== null && sm !== undefined && sm !== '') {
-          const n = Number(sm);
-          if (Number.isFinite(n) && n >= 1 && n <= 12) {
-            this.selectedMonth = n;
-            anySet = true;
-          }
-        }
-        if (sd !== null && sd !== undefined && sd !== '') {
-          const n = Number(sd);
-          if (Number.isFinite(n) && n >= 1 && n <= 31) {
-            this.selectedDay = n;
-            anySet = true;
-          }
-        }
-        if (sy !== null && sy !== undefined && sy !== '') {
-          const n = Number(sy);
-          if (Number.isFinite(n) && n >= 1900 && n <= 3000) {
-            this.selectedYear = n;
-            anySet = true;
-          }
-        }
-
-        if (anySet) {
-          this.saveSelections();
-        }
-        return anySet;
+        const { parseQueryParams, persistSelections } = require('../utils/params.js');
+        const parsed = parseQueryParams(window.location.search);
+        if (!parsed || !parsed.anySet) return false;
+        if (parsed.reason) this.reason = parsed.reason;
+        if (parsed.otherReason) this.otherReason = parsed.otherReason;
+        if (parsed.month != null) this.selectedMonth = parsed.month;
+        if (parsed.day != null) this.selectedDay = parsed.day;
+        if (parsed.year != null) this.selectedYear = parsed.year;
+        persistSelections({
+          reason: this.reason,
+          otherReason: this.otherReason,
+          month: this.selectedMonth,
+          day: this.selectedDay,
+          year: this.selectedYear,
+        });
+        return true;
       } catch (e) {
         return false;
       }
@@ -173,7 +143,7 @@ export default {
         if (!raw) return;
         const data = JSON.parse(raw);
         if (data && typeof data === 'object') {
-          if (typeof data.reason === 'string') this.reason = data.reason;
+          if (typeof data.reason === 'string') this.reason = (data.reason === 'other...' ? 'other' : data.reason);
           if (typeof data.otherReason === 'string') this.otherReason = data.otherReason;
           if (typeof data.selectedMonth === 'string' || typeof data.selectedMonth === 'number') this.selectedMonth = data.selectedMonth;
           if (typeof data.selectedDay === 'string' || typeof data.selectedDay === 'number') this.selectedDay = data.selectedDay;
@@ -209,8 +179,8 @@ export default {
       let offset = ((currentDate.getTimezoneOffset()) - (selectedDate.getTimezoneOffset())) * 60000;
       let days = Math.floor((currentDate - selectedDate - offset) / 86400000);
       
-      const computedReason = this.reason === 'other...'
-        ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other...')
+      const computedReason = this.reason === 'other'
+        ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other')
         : this.reason;
 
       // Save the dayCount data to localStorage

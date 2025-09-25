@@ -6,7 +6,7 @@
       </a>
     </div>
     <div class="d-flex justify-end">
-      <VBtn class="text-lowercase" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button">Update</VBtn>
+      <VBtn class="text-lowercase" style="height:40px;" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button">Update</VBtn>
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" text="URL copied to clipboard!">
         <template #activator="{ props }">
           <VBtn v-bind="props" @click='copyUrlSelections()' color="primary" class="ms-4" size="small" variant="text" icon="mdi-link-variant" type="button" />
@@ -41,23 +41,10 @@ export default {
 			this.$emit('openDrawer')
 		},
     buildShareUrl() {
+      // Delegate to shared util
       try {
-        const raw = localStorage.getItem('daycounterSelections');
-        const data = raw ? JSON.parse(raw) : {};
-        const reason = data && typeof data.reason === 'string' ? data.reason : '';
-        const selectedMonth = data && (data.selectedMonth ?? '');
-        const selectedDay = data && (data.selectedDay ?? '');
-        const selectedYear = data && (data.selectedYear ?? '');
-
-        const base = window.location.origin + window.location.pathname;
-        const params = new URLSearchParams();
-        if (reason) params.set('reason', reason);
-        if (selectedMonth !== '') params.set('selectedMonth', String(selectedMonth));
-        if (selectedDay !== '') params.set('selectedDay', String(selectedDay));
-        if (selectedYear !== '') params.set('selectedYear', String(selectedYear));
-
-        const query = params.toString();
-        return query ? `${base}?${query}` : base;
+        const { buildShareUrlFromLocalStorage } = require('../utils/params.js');
+        return buildShareUrlFromLocalStorage();
       } catch (e) {
         return window.location.href;
       }

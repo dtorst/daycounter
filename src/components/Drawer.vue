@@ -20,7 +20,7 @@
           <v-expansion-panel
             class="bg-transparent"
           >
-            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:16px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-help-circle</VIcon> What is this?</VExpansionPanelTitle>
+            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:15px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-help-circle</VIcon> What is this?</VExpansionPanelTitle>
             <VExpansionPanelText style="font-size:14px;">
               What's going on here? It's pretty simple, really.
               <br /><br />
@@ -36,7 +36,7 @@
           <v-expansion-panel
             class="bg-transparent"
           >
-            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:16px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-lightbulb-variant-outline</VIcon> Feedback, questions, etc</VExpansionPanelTitle>
+            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:15px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-lightbulb-variant-outline</VIcon> Feedback, questions, etc</VExpansionPanelTitle>
             <VExpansionPanelText style="font-size:14px;">
               Ideas, feedback, questions, collabs? I'm open to any and all of it! <br/><br/>Email me at davidtorstenson @ gmail.com to get in touch.
             </VExpansionPanelText>
@@ -44,7 +44,7 @@
           <v-expansion-panel
             class="bg-transparent"
           >
-            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:16px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-heart</VIcon> Support</VExpansionPanelTitle>
+            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:15px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-heart</VIcon> Support</VExpansionPanelTitle>
             <VExpansionPanelText style="font-size:14px;">
               This site is totally free - nothing to sell you (at least at the moment).<br/><br/>But if you receive any value from stopping by, and would like to <a class="text-white font-weight-bold" href="https://buymeacoffee.com/dtorst" target="_blank">buy me a <span style="font-size:20px;line-height:16px;">☕️</span></a> (or a <span style="font-size:18px;line-height:16px;">🍺</span>), I certainly won't say no!
             </VExpansionPanelText>
@@ -88,6 +88,11 @@ export default {
 </script>
 <style scoped>
 /* Custom styling to match your app's theme */
+
+* {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
 :deep(.v-navigation-drawer) {
   background: rgba(17, 25, 54, 0.95) !important;
   backdrop-filter: blur(10px);

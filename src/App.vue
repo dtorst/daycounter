@@ -60,10 +60,42 @@ export default {
     }
   },
   mounted() {
-    this.restoreDayCount();
+    const applied = this.applyDayCountFromUrl();
+    if (!applied) {
+      this.restoreDayCount();
+    }
     this.updateTodaysDayFromSelections();
   },
   methods: {
+   applyDayCountFromUrl() {
+     try {
+       const { parseQueryParams, computeDaysSince, persistSelections, persistDayCount } = require('./utils/params.js');
+       const parsed = parseQueryParams(window.location.search, { strict: true });
+       if (!parsed || !parsed.isComplete) return false;
+
+       const days = computeDaysSince(parsed.year, parsed.month, parsed.day);
+       const computedReason = parsed.reason === 'other'
+         ? ((parsed.otherReason && parsed.otherReason.trim().length > 0) ? parsed.otherReason.trim() : 'other')
+         : parsed.reason;
+
+       persistSelections({
+         reason: parsed.reason,
+         otherReason: parsed.otherReason,
+         month: parsed.month,
+         day: parsed.day,
+         year: parsed.year,
+       });
+
+       persistDayCount({ days, why: computedReason });
+
+       this.daysSince = days;
+       this.reason = computedReason;
+       this.currentComponent = 'PickerGroup';
+       return true;
+     } catch (e) {
+       return false;
+     }
+   },
    updateDays({days,why}) {
      this.daysSince = days;
      this.reason = why;
@@ -217,6 +249,7 @@ export default {
 
 .interactable {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
   z-index: 1000;
