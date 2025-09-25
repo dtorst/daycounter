@@ -132,6 +132,14 @@ export default {
           day: this.selectedDay,
           year: this.selectedYear,
         });
+        
+        // If we have complete data, auto-calculate to show day mode
+        if (parsed.isComplete) {
+          this.$nextTick(() => {
+            this.calculateDays();
+          });
+        }
+        
         return true;
       } catch (e) {
         return false;
