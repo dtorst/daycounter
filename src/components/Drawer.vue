@@ -24,9 +24,9 @@
             <VExpansionPanelText style="font-size:14px;">
               In the Book of Psalms, the psalmist writes, "teach us to number our days, that we may gain a heart of wisdom."
               <br /><br />
-              Daycounter is here to help you do that. It's a humble little count-<span class="font-italic">up</span> app in n a world filled with countdown apps.
+              Daycounter is here to help you do that. It's a humble little count-<span class="font-italic">up</span> app in a world filled with countdown apps.
               <br/><br/>
-              Which makes sense, honestly. We tend to invest way more mental and emotional energy towards reaching the next big mile marker.
+              Which makes sense, honestly. We tend to invest way more mental and emotional energy towards reaching the next big mile marker, don't we?
               <br/><br/>
               This is meant as a bit of a counterweight to that mentality. We can (and should!) look forward with anticipation. But we should also look back with gratitude for how far we've come.
               <br /><br />
