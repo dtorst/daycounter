@@ -23,6 +23,7 @@
 </template>
 <script>
 	import { VueScrollPicker } from 'vue-scroll-picker';
+  import { track } from '../utils/analytics';
 
 export default {
   name: 'PickerGroup',
@@ -53,6 +54,7 @@ export default {
     selectedDay() { this.saveSelections(); },
     reason(newVal) {
       this.saveSelections();
+      track('reason_selected', { reason: newVal });
       if (newVal === 'other') {
         this.focusOtherInput();
       }
@@ -196,7 +198,10 @@ export default {
 
       // Save the dayCount data to localStorage
       this.saveDayCount({ 'days': days, 'why': computedReason });
-      
+
+      // Track finalized reason selection (includes otherReason if provided)
+      track('reason_finalized', { reason: computedReason });
+
       this.$emit('dayCount', { 'days':days, 'why': computedReason });
     }
   },
