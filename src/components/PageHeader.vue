@@ -5,7 +5,7 @@
         <img src="../assets/daycounter-icon.svg" alt="Daycounter" height="44px" />
       </a>
     </div>
-    <div class="d-flex justify-end">
+    <div v-if="!mobile" class="d-flex justify-end">
       <VBtn class="text-lowercase" style="height:40px;" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button">Update</VBtn>
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" text="URL copied to clipboard!">
         <template #activator="{ props }">
@@ -13,6 +13,15 @@
         </template>
       </VTooltip>
       <VBtn @click='clickOpenDrawer()' color="primary" class="ms-2 me-4" size="small" variant="text" icon="mdi-menu" type="button"/>
+    </div>    
+    <div v-else class="d-flex justify-end">
+      <VBtn color="primary" variant="text" size="small" icon="mdi-square-edit-outline" v-if="buttonDisplay" @click='clickUpdate()' />
+      <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" text="URL copied to clipboard!">
+        <template #activator="{ props }">
+          <VBtn v-bind="props" @click='copyUrlSelections()' color="primary" class="ms-1" size="small" variant="text" icon="mdi-link-variant" type="button" />
+        </template>
+      </VTooltip>
+      <VBtn @click='clickOpenDrawer()' color="primary" class="ms-1 me-2" size="small" variant="text" icon="mdi-menu" type="button"/>
     </div>
   </header>
 </template>
@@ -31,6 +40,11 @@ export default {
     if (this.copyTimer) {
       clearTimeout(this.copyTimer);
       this.copyTimer = null;
+    }
+  },
+  computed: {
+    mobile() {
+      return this.$vuetify.display.mobile;
     }
   },
   methods: {

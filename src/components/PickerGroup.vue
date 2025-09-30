@@ -1,25 +1,78 @@
 <template>
-	<div class="picker-group">
+	<div v-if="!mobile" class="picker-group">
 		<div class="reason-column" :class="{ 'other-active': reason === 'other' }">
 			<VueScrollPicker :options="reasons" v-model="reason" />
 			<VTextField v-if="reason === 'other'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other" />
 		</div>
-        <div class="since-column">
+    <div class="since-column">
+      <span class="since">since</span>
+    </div>
+    <div class="month-column">
+      <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column" />
+    </div>
+    <div class="day-column">
+      <VueScrollPicker :options="days" v-model="selectedDay" class="day-column" />
+    </div>
+    <div class="year-column">
+      <VueScrollPicker :options="years" v-model="selectedYear" class="year-column" />
+    </div>
+    <div class="btn-container">
+      <button class="calculate-days-mobile" @click="calculateDays"><span class="material-symbols-outlined" style="line-height:30px;">sunny</span></button>
+    </div>
+  </div>
+  <div v-else class="picker-group mobile">
+    <v-carousel
+      v-model="currentIndex"
+      style="width:100vw;height:70vh;margin-top:10vh;"
+      hide-delimiters
+      :continuous="false"
+    >
+      <template v-slot:prev="{ props }">
+        <v-btn
+          color="primary"
+          variant="outlined"
+          icon="mdi-chevron-left"
+          @click="props.onClick"
+        />
+      </template>
+      <template v-slot:next="{ props }">
+        <v-btn
+          v-if="currentIndex < 3"
+          color="primary"
+          variant="outlined"
+          icon="mdi-chevron-right"
+          @click="props.onClick"
+        />
+        <VBtn v-else color="primary" @click="calculateDays" icon="mdi-white-balance-sunny" variant="outlined" />
+
+      </template>
+      <v-carousel-item>
+        <div :class="{ 'other-active': reason === 'other' }">
+          <VueScrollPicker :options="reasons" v-model="reason" class="mobile-picker" />
+          <VTextField v-if="reason === 'other'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other" />
+        </div>
+        <div class="text-center">
           <span class="since">since</span>
         </div>
-        <div class="month-column">
-          <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column" />
+      </v-carousel-item>
+      <v-carousel-item>
+        <div>
+          <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column mobile-picker" />
         </div>
-        <div class="day-column">
-          <VueScrollPicker :options="days" v-model="selectedDay" class="day-column" />
+      </v-carousel-item>
+      <v-carousel-item>
+        <div>
+          <VueScrollPicker :options="days" v-model="selectedDay" class="day-column mobile-picker" />
         </div>
-        <div class="year-column">
-          <VueScrollPicker :options="years" v-model="selectedYear" class="year-column" />
+      </v-carousel-item>
+      <v-carousel-item>
+        <div>
+          <VueScrollPicker :options="years" v-model="selectedYear" class="year-column mobile-picker" />
         </div>
-        <div class="btn-container">
-          <button class="calculate-days" @click="calculateDays"><span class="material-symbols-outlined" style="line-height:30px;">sunny</span></button>
-        </div>
-      </div>
+      </v-carousel-item>
+      <v-carousel-item></v-carousel-item>
+    </v-carousel>
+  </div>
 </template>
 <script>
 	import { VueScrollPicker } from 'vue-scroll-picker';
@@ -37,6 +90,7 @@ export default {
       selectedDay: 15,
       reason: "alive",
       otherReason: "",
+      currentIndex: 0,
     }
   },
   mounted() {
@@ -62,7 +116,9 @@ export default {
     otherReason() { this.saveSelections(); },
   },
   computed: {
-
+    mobile() {
+      return this.$vuetify.display.mobile;
+    },
     years() {
       const currYear = new Date().getFullYear()
       const lastYear = 1900
@@ -203,6 +259,7 @@ export default {
       track('reason_finalized', { reason: computedReason });
 
       this.$emit('dayCount', { 'days':days, 'why': computedReason });
+      this.currentIndex = 0;
     }
   },
 }
@@ -259,6 +316,9 @@ export default {
     width: 100%;
     height: 15em;
     mask-image:linear-gradient(to bottom, rgba(242,239,136,0) 0%,rgba(242,239,136,0.65) 42%,rgba(242,239,136,1) 43%,rgba(242,239,136,1) 57%,rgba(242,239,136,0.65) 58%,rgba(242,239,136,0) 100%);
+}
+.mobile-picker {
+  height: 25em;
 }
 .vue-scroll-picker-rotator {
     position: absolute;
@@ -341,6 +401,15 @@ export default {
 .calculate-days :hover {
   font-variation-settings:
   'FILL' 1
+}
+
+.calculate-days-mobile {
+  height:46px !important;
+  width:46px !important;
+  border-radius:23px !important;
+  border:1px solid #F2EF88 !important;
+  line-height:44px !important;
+  font-size:22px !important;
 }
 
 /* When other is active, visually hide the selected picker item so the input appears in its place */

@@ -6,11 +6,14 @@
         <FireworksDisplay v-if="todaysDay" />
         <PageHeader :buttonDisplay="daysSince" @buttonClicked="daysSince = null" @openDrawer="openDrawer" />
         <div class="interactable">
-          <div class="readout mt-6" v-if="daysSince">
-            <h3 style="margin-bottom:0px;">It's {{today}} </h3>
-            <h1 style="margin-top:0px;">you&#8217;ve been {{reason}} for </h1>
+          <div class="readout" :class="mobile ? 'mt-12' : 'mt-6'" v-if="daysSince">
+            <h3 v-if="!mobile" style="margin-bottom:0px;">It's {{today}} </h3>
+            <h3 v-else style="line-height:1.5;" :class="mobile ? 'px-16' : ''" :style="{marginBottom: mobile ? '32px' : '0px'}">It's {{today}} </h3>
+            <h1 v-if="!mobile" style="margin-top:0px;">you&#8217;ve been {{reason}} for </h1>
+            <h1 v-else style="margin-top:0px;" :style="{marginBottom: mobile ? '16px' : '0px'}">you&#8217;ve been {{reason}} for </h1>
             <flip-clock :options="flipOptions" />
-            <h1>days</h1>
+            <h1 v-if="!mobile">days</h1>
+            <h1 v-else :style="{marginTop: mobile ? '16px' : '0px'}">days</h1>
           </div>
           <KeepAlive>
             <PickerGroup :is="currentComponent" v-if="!daysSince" @dayCount="updateDays" />
@@ -46,6 +49,9 @@ export default {
         autoStart: false,
         digit: this.daysSince
       }
+    },
+    mobile() {
+      return this.$vuetify.display.mobile;
     }
   },
 
