@@ -17,7 +17,7 @@
       <VueScrollPicker :options="years" v-model="selectedYear" class="year-column" />
     </div>
     <div class="btn-container">
-      <button class="calculate-days-mobile" @click="calculateDays"><span class="material-symbols-outlined" style="line-height:30px;">sunny</span></button>
+      <button class="calculate-days" @click="calculateDays"><span class="material-symbols-outlined" style="line-height:30px;">sunny</span></button>
     </div>
   </div>
   <div v-else class="picker-group mobile">
