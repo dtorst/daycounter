@@ -47,7 +47,7 @@ export default {
     max-width: 3000px;
     max-height: 3000px;
     display: block;
-    position: absolute;
+    position: fixed;
     margin-top:65vh;
 
 
@@ -360,5 +360,33 @@ export default {
   bottom: -12rem;
   -webkit-transition: all 1.1s 0s ease;
   transition: all 1.1s 0s ease;
+}
+
+/* Mobile portrait: nudge individual hills to better match design */
+@media (max-width: 599px) and (orientation: portrait) {
+  /* Move hills 1 & 3 further left and slightly down */
+  .hills div:nth-child(1) { transform: translate(-138px, 12px); }
+  .hills div:nth-child(3) { transform: translate(60px, 42px); }
+
+  /* Move hills 2 & 4 further right and slightly down */
+  .hills div:nth-child(2) { transform: translate(-20px, 10px); }
+  .hills div:nth-child(4) { transform: translate(210px, 14px); }
+
+  .sun {
+    bottom: 40px;
+  }
+  .water {
+    left: 0;
+    width: 100%;
+    bottom: 50px;
+  }
+  .moon {
+    left: 150%;
+  }
+  .rays {
+    max-width: 2000px;
+    max-height: 2000px;
+  }
+
 }
 </style>

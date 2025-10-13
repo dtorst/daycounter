@@ -48,7 +48,7 @@
           <v-expansion-panel
             class="bg-transparent"
           >
-            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:15px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-heart</VIcon> Support</VExpansionPanelTitle>
+            <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:15px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-heart</VIcon> Support the creator</VExpansionPanelTitle>
             <VExpansionPanelText style="font-size:14px;">
               <p class="mb-6">This site is totally free - nothing to sell you (at least at the moment).<br/><br/>But if you receive any value from stopping by, and would like to buy me a <span style="font-size:20px;line-height:16px;">☕️</span> (or a <span style="font-size:18px;line-height:16px;">🍺</span>), I certainly won't say no!</p>
               <VBtn class="text-lowercase" color="success" block href="https://buymeacoffee.com/dtorst" target="_blank"><span class="text-capitalize">S</span>how some&nbsp;<VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-heart</VIcon></VBtn>
