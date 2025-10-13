@@ -186,7 +186,8 @@ export default {
   margin: 0;
   padding: 0;
   font-size: 16px;
-  height: 100vh;
+  height: 100%;
+  overflow: hidden;
   width: 100vw;
   box-sizing: border-box;
 }
@@ -243,7 +244,9 @@ export default {
   overflow: hidden;
   top:0px;
   clear:both;
-  height: 100vh;
+  height: 100vh; 
+  height: 100svh;  /* small viewport height (iOS) */
+  height: 100dvh;
   width: 100vw;
   background: linear-gradient(var(--myColor1), var(--myColor2));
   transition: --myColor1 3s, --myColor2 3s;
@@ -296,7 +299,7 @@ export default {
 @media (max-width: 599px) and (orientation: portrait) {
   
   .readout {
-    margin-top: 200px !important;
+    margin-top: 100px !important;
   }
   #app h1 {
     font-size: 2.5rem !important;

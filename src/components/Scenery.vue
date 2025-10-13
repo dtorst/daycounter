@@ -366,11 +366,11 @@ export default {
 @media (max-width: 599px) and (orientation: portrait) {
   /* Move hills 1 & 3 further left and slightly down */
   .hills div:nth-child(1) { transform: translate(-138px, 12px); }
-  .hills div:nth-child(3) { transform: translate(60px, 42px); }
+  .hills div:nth-child(3) { transform: translate(85px, 42px); }
 
   /* Move hills 2 & 4 further right and slightly down */
-  .hills div:nth-child(2) { transform: translate(-20px, 10px); }
-  .hills div:nth-child(4) { transform: translate(210px, 14px); }
+  .hills div:nth-child(2) { transform: translate(-45px, 10px); }
+  .hills div:nth-child(4) { transform: translate(220px, 14px); }
 
   .sun {
     bottom: 40px;
@@ -386,6 +386,9 @@ export default {
   .rays {
     max-width: 2000px;
     max-height: 2000px;
+  }
+  .scene {
+    bottom:-80px;
   }
 
 }
