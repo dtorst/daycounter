@@ -6,16 +6,16 @@
       </a>
     </div>
     <div v-if="!mobile" class="d-flex justify-end">
-      <VBtn class="text-lowercase" style="height:40px;" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button">Update</VBtn>
-      <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" text="URL copied to clipboard!">
+      <VBtn class="text-capitalize" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button" prepend-icon="mdi-calendar-edit">Update</VBtn>
+      <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" location="bottom" text="Link copied!">
         <template #activator="{ props }">
-          <VBtn v-bind="props" @click='copyUrlSelections()' color="primary" class="ms-4" size="small" variant="text" icon="mdi-link-variant" type="button" />
+          <VBtn prepend-icon="mdi-link-variant" class="text-capitalize ms-4" variant="outlined" rounded v-bind="props" @click='copyUrlSelections()' color="primary" type="button">Share</VBtn>
         </template>
       </VTooltip>
       <VBtn @click='clickOpenDrawer()' color="primary" class="ms-2 me-4" size="small" variant="text" icon="mdi-menu" type="button"/>
     </div>    
     <div v-else class="d-flex justify-end">
-      <VBtn color="primary" variant="text" size="small" icon="mdi-square-edit-outline" v-if="buttonDisplay" @click='clickUpdate()' />
+      <VBtn color="primary" variant="text" size="small" icon="mdi-calendar-edit" v-if="buttonDisplay" @click='clickUpdate()' />
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" text="URL copied to clipboard!">
         <template #activator="{ props }">
           <VBtn v-bind="props" @click='copyUrlSelections()' color="primary" class="ms-1" size="small" variant="text" icon="mdi-link-variant" type="button" />
