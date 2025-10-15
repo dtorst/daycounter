@@ -373,9 +373,9 @@ export default {
   .hills div:nth-child(4) { transform: translate(220px, 14px); }
 
   .sun {
-    bottom: 60px;  
-    width: 12.5rem;
-    height: 12.5rem;
+    bottom: 6rem;  
+    width: 10rem;
+    height: 10rem;
   }
   .water {
     left: 0;
