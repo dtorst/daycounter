@@ -373,7 +373,9 @@ export default {
   .hills div:nth-child(4) { transform: translate(220px, 14px); }
 
   .sun {
-    bottom: 40px;
+    bottom: 60px;  
+    width: 12.5rem;
+    height: 12.5rem;
   }
   .water {
     left: 0;
@@ -386,6 +388,7 @@ export default {
   .rays {
     max-width: 2000px;
     max-height: 2000px;
+    margin-top:40svh;
   }
   .scene {
     bottom:-80px;

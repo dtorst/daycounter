@@ -302,13 +302,15 @@ export default {
     margin-top: 100px !important;
   }
   #app h1 {
-    font-size: 2.5rem !important;
-    line-height: 2.5rem;
+    font-size: 2.25rem !important;
+    line-height: 2rem;
   }
   #app h3 {
-    font-size: 1.5rem !important;
+    font-size: 1.25rem !important;
     line-height: 1.25rem;
     margin-bottom: 0.75rem;
+    margin-left: 12px;
+    margin-right: 12px;
   }
 }
 
