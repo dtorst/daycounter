@@ -16,9 +16,9 @@
     </div>    
     <div v-else class="d-flex justify-end">
       <VBtn color="primary" variant="text" size="small" icon="mdi-calendar-edit" v-if="buttonDisplay" @click='clickUpdate()' />
-      <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" text="URL copied to clipboard!">
+      <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" location="bottom" text="Link copied!">
         <template #activator="{ props }">
-          <VBtn v-bind="props" @click='copyUrlSelections()' color="primary" class="ms-1" size="small" variant="text" icon="mdi-link-variant" type="button" />
+          <VBtn v-bind="props" @click='copyUrlSelections()' v-if="buttonDisplay" color="primary" class="ms-1" size="small" variant="text" icon="mdi-link-variant" type="button" />
         </template>
       </VTooltip>
       <VBtn @click='clickOpenDrawer()' color="primary" class="ms-1 me-2" size="small" variant="text" icon="mdi-menu" type="button"/>

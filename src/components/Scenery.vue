@@ -385,6 +385,11 @@ export default {
   .moon {
     left: 150%;
   }
+  .night .moon {
+    left: 100%;
+    top: -8%;
+  }
+
   .rays {
     max-width: 2000px;
     max-height: 2000px;

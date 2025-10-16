@@ -23,7 +23,7 @@
   <div v-else class="picker-group mobile">
     <v-carousel
       v-model="currentIndex"
-      style="width:100vw;height:70vh;margin-top:10vh;"
+      style="width:100vw;height:70vh;"
       hide-delimiters
       :continuous="false"
     >
@@ -269,9 +269,7 @@ export default {
 
 
 @media (min-width: 320px) and (max-width: 480px) {
-  
-  /* CSS */
-  
+
 }
 
 .since {
@@ -318,7 +316,7 @@ export default {
     mask-image:linear-gradient(to bottom, rgba(242,239,136,0) 0%,rgba(242,239,136,0.65) 42%,rgba(242,239,136,1) 43%,rgba(242,239,136,1) 57%,rgba(242,239,136,0.65) 58%,rgba(242,239,136,0) 100%);
 }
 .mobile-picker {
-  height: 25em;
+  height: 35rem;
 }
 .vue-scroll-picker-rotator {
     position: absolute;
@@ -385,7 +383,6 @@ export default {
 }
 
 .picker-group {
-
   display: flex;
   margin:0 auto;
   padding-top:60px;
@@ -448,4 +445,43 @@ export default {
 .other-reason-input input::placeholder {
   color: #ccc;
 }
+
+.picker-group.mobile .vue-scroll-picker-item {
+  line-height: 1.75em; /* was 1.2em; the component's layers assume 2em */
+}
+
+/* Center mobile carousel pickers and overlay misc labels */
+.picker-group.mobile .v-carousel-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.picker-group.mobile .v-carousel-item > div:first-child {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.picker-group.mobile .v-carousel-item .text-center {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+}
+
+/* On mobile, hide selected text when overlay input is active */
+.picker-group.mobile .other-active .vue-scroll-picker-item-selected {
+  color: transparent;
+}
+
+/* Align picker em offsets with item line-height on mobile
+   Item line-height = 1.2em of 2rem => 2.4rem; half = 1.2rem
+   Make 1em inside the picker equal 1.2rem so center band aligns */
+.picker-group.mobile .vue-scroll-picker {
+  font-size: 1.25rem !important;
+}
+/* Center Vuetify carousel controls exactly on the midline (mobile only) */
+/*.picker-group.mobile .v-window__controls {
+  height: 83% !important;
+} */
 </style>
