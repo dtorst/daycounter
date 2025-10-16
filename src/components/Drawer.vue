@@ -22,15 +22,11 @@
           >
             <VExpansionPanelTitle collapse-icon="mdi-moon-waxing-crescent" expand-icon="mdi-white-balance-sunny" style="font-size:15px;"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-help-circle</VIcon> What is this?</VExpansionPanelTitle>
             <VExpansionPanelText style="font-size:14px;">
-              In the Book of Psalms, the psalmist writes, "teach us to number our days, that we may gain a heart of wisdom."
+              In the Book of Psalms, the psalmist writes, "Teach us to number our days, that we may gain a heart of wisdom."
               <br /><br />
-              Daycounter is here to help you do that. It's a humble little count-<span class="font-italic">up</span> app in a world filled with countdown apps.
+              Daycounter is here to help you do that. In a world full of countdowns, sometimes it's good to count <span class="font-italic">up</span>.
               <br/><br/>
-              Which makes sense, honestly. We tend to invest way more mental and emotional energy towards reaching the next big mile marker, don't we?
-              <br/><br/>
-              This is meant as a bit of a counterweight to that mentality. We can (and should!) look forward with anticipation. But we should also look back with gratitude for how far we've come.
-              <br /><br />
-              Our time on Earth is short. Every single day is a gift. Let's make each one count.
+              Every day is a gift. Let's make 'em all count.
               <br /><br />
               ===<br /><br/>
               <span class="font-weight-bold">Credits</span><br />
