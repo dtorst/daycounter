@@ -29,8 +29,8 @@
               Every day is a gift. Let's make 'em all count.
               <br /><br />
               ===<br /><br/>
-              <span class="font-weight-bold">Credits</span><br />
-              Built by <a class="text-white" href="https://davidtorstenson.com" target="_blank">David Torstenson</a> using <a class="text-white" href="https://vuetifyjs.com/" target="_blank">Vuetify</a> (and lots of CSS).<br/>FlipClock component by <a class="text-white" href="https://github.com/mvpleung/vue-flipclock" target="_blank">mvpleung</a>.
+              <span class="font-weight-bold">Made with</span><br />
+              <a class="text-white" href="https://vuetifyjs.com/" target="_blank">Vuetify</a>, love, and lots of CSS by <a class="text-white" href="https://davidtorstenson.com" target="_blank">David Torstenson</a>.<br/>FlipClock by <a class="text-white" href="https://github.com/mvpleung/vue-flipclock" target="_blank">mvpleung</a>.<br/>VueScrollPicker by <a class="text-white" href="https://github.com/wan2land/vue-scroll-picker">wan2land</a>.
             </VExpansionPanelText>
           </v-expansion-panel>
           <v-expansion-panel

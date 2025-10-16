@@ -6,19 +6,27 @@
       </a>
     </div>
     <div v-if="!mobile" class="d-flex justify-end">
-      <VBtn class="text-capitalize" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button" prepend-icon="mdi-calendar-edit">Update</VBtn>
+      <VFadeTransition>
+        <VBtn class="text-capitalize" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button" prepend-icon="mdi-calendar-edit">Update</VBtn>
+      </VFadeTransition>
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" location="bottom" text="Link copied!">
         <template #activator="{ props }">
-          <VBtn v-if="buttonDisplay" prepend-icon="mdi-link-variant" class="text-capitalize ms-4" variant="outlined" rounded v-bind="props" @click='copyUrlSelections()' color="primary" type="button">Share</VBtn>
+          <VFadeTransition>
+            <VBtn v-if="buttonDisplay" prepend-icon="mdi-link-variant" class="text-capitalize ms-4" variant="outlined" rounded v-bind="props" @click='copyUrlSelections()' color="primary" type="button">Share</VBtn>
+          </VFadeTransition>
         </template>
       </VTooltip>
       <VBtn @click='clickOpenDrawer()' color="primary" class="ms-2 me-4" size="small" variant="text" icon="mdi-menu" type="button"/>
     </div>    
     <div v-else class="d-flex justify-end">
-      <VBtn color="primary" variant="text" size="small" icon="mdi-calendar-edit" v-if="buttonDisplay" @click='clickUpdate()' />
+      <VFadeTransition>
+        <VBtn color="primary" variant="text" size="small" icon="mdi-calendar-edit" v-if="buttonDisplay" @click='clickUpdate()' />
+      </VFadeTransition>
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" location="bottom" text="Link copied!">
         <template #activator="{ props }">
-          <VBtn v-bind="props" @click='copyUrlSelections()' v-if="buttonDisplay" color="primary" class="ms-1" size="small" variant="text" icon="mdi-link-variant" type="button" />
+          <VFadeTransition>
+            <VBtn v-bind="props" @click='copyUrlSelections()' v-if="buttonDisplay" color="primary" class="ms-1" size="small" variant="text" icon="mdi-link-variant" type="button" />
+          </VFadeTransition>
         </template>
       </VTooltip>
       <VBtn @click='clickOpenDrawer()' color="primary" class="ms-1 me-2" size="small" variant="text" icon="mdi-menu" type="button"/>
