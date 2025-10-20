@@ -207,7 +207,7 @@ export default {
 #app h1 {
   color: #E9E9E9 !important;
   text-align: center;
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
   font-family: 'Sugar Peachy' !important;
   font-size: 3.75rem !important;
   font-style: normal;
@@ -294,6 +294,10 @@ export default {
 /* Force FlipClock digit background to #333 in all environments */
 .flip-clock-wrapper ul li a div div.inn {
   background: #333 !important;
+}
+
+.flip-clock-wrapper .flip {
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 2px 5px !important;
 }
 
 @media (max-width: 599px) and (orientation: portrait) {

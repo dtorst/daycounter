@@ -24,7 +24,7 @@
             <VExpansionPanelText style="font-size:14px;">
               In the Book of Psalms, the psalmist writes, "Teach us to number our days, that we may gain a heart of wisdom."
               <br /><br />
-              Daycounter is here to help you do that. In a world full of countdowns, sometimes it's good to count <span class="font-italic">up</span>.
+              Daycounter is here to help you do that. In a world full of countdowns, sometimes it's good to stop and count <span class="font-italic">up</span>.
               <br/><br/>
               Every day is a gift. Let's make 'em all count.
               <br /><br />
