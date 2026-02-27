@@ -5,10 +5,10 @@
         <h3 v-if="!mobile" style="margin-bottom:0px;">It's {{ today }} </h3>
         <h3 v-else style="line-height:1.5;margin-bottom:16px;">It's {{ today }} </h3>
         <h1 v-if="!mobile" style="margin-top:0px;">you&#8217;ve been {{ reason }} for </h1>
-        <h1 v-else style="margin-top:0px;margin-bottom:16px;">you&#8217;ve been {{ reason }} for </h1>
+        <h1 v-else style="margin-top:0px;margin-bottom:16px;text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);">you&#8217;ve been {{ reason }} for </h1>
         <flip-clock :options="flipOptions" />
         <h1 v-if="!mobile">days</h1>
-        <h1 v-else style="margin-top:16px;">days</h1>
+        <h1 v-else style="margin-top:16px;text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);">days</h1>
       </div>
       <KeepAlive>
         <PickerGroup :is="currentComponent" v-if="!daysSince" @dayCount="onDayCount" />
