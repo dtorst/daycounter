@@ -291,11 +291,11 @@ export default {
   height: 387px;
   width: 526px;
   -webkit-mask:
-    linear-gradient(#0000 calc(3 * var(--r) / 2), #000 0),
-    radial-gradient(var(--r) at 50% calc(2 * var(--r)), #000 98%, #0000 101%);
+    linear-gradient(#0000 calc(1.35 * var(--r)), #000 0),
+    radial-gradient(var(--r) at 50% calc(1.8 * var(--r)), #000 98%, #0000 101%);
   mask:
-    linear-gradient(#0000 calc(3 * var(--r) / 2), #000 0),
-    radial-gradient(var(--r) at 50% calc(2 * var(--r)), #000 98%, #0000 101%);
+    linear-gradient(#0000 calc(1.35 * var(--r)), #000 0),
+    radial-gradient(var(--r) at 50% calc(1.8 * var(--r)), #000 98%, #0000 101%);
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
   background: var(--scenery-hill-4-day, #196419);
 }

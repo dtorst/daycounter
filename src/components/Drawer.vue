@@ -25,13 +25,13 @@
             <VExpansionPanelText style="font-size:14px;">
               In the Book of Psalms, the psalmist writes, "Teach us to number our days, that we may gain a heart of wisdom."
               <br /><br />
-              Daycounter is here to help you do that. In a world full of countdowns, sometimes it's good to stop and count <span class="font-italic">up</span>.
+              Daycounter is here to help do that. In a world full of countdowns, sometimes it's good to stop and count <span class="font-italic">up</span>.
               <br/><br/>
               Every day is a gift. Let's make 'em all count.
               <br /><br />
-              ===<br /><br/>
-              <span class="font-weight-bold">Made with</span><br />
-              <a class="text-white" href="https://vuetifyjs.com/" target="_blank">Vuetify</a>, love, and lots of CSS by <a class="text-white" href="https://davidtorstenson.com" target="_blank">David Torstenson</a>.<br/>FlipClock by <a class="text-white" href="https://github.com/mvpleung/vue-flipclock" target="_blank">mvpleung</a>.<br/>VueScrollPicker by <a class="text-white" href="https://github.com/wan2land/vue-scroll-picker">wan2land</a>.
+              <hr class="my-2 w-25"/>
+              <span>Created by</span> <a class="text-white font-weight-medium text-decoration-none" href="https://davidtorstenson.com" target="_blank">David Torstenson</a><br/>
+              <span>With</span> <a class="text-white" href="https://vuetifyjs.com/" target="_blank">Vuetify</a>, love, and lots of CSS.<br/><br/>FlipClock by <a class="text-white" href="https://github.com/mvpleung/vue-flipclock" target="_blank">mvpleung</a>.<br/><br/>VueScrollPicker by <a class="text-white" href="https://github.com/wan2land/vue-scroll-picker">wan2land</a>.
             </VExpansionPanelText>
           </v-expansion-panel>
           <v-expansion-panel
@@ -60,7 +60,7 @@
       <VDivider class="my-3" />
       <VRow class="d-flex mb-4 mx-4 justify-space-between">
         <a href="https://github.com/dtorst/daycounter" target="_blank"><VIcon color="white" style="color:#fff !important;" size="small" class="me-2 text-white">mdi-github</VIcon></a>
-        <p class="text-grey-lighten-1 text-center text-subtitle-2">2025 © Daycounter</p>
+        <p class="text-grey-lighten-1 text-center text-subtitle-2">{{currentYear}} © Daycounter</p>
       </VRow>
       </template>
     </VNavigationDrawer>
@@ -83,6 +83,11 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value)
+      }
+    },
+    currentYear: {
+      get() {
+        return new Date().getFullYear()
       }
     }
   }
