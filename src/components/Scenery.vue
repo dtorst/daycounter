@@ -71,8 +71,8 @@ export default {
   left: 50%;
   top: 50%;
   translate: -50% -50%;
-  -webkit-transition: opacity 4s 0s ease;
-  transition: opacity 4s 0s ease;
+  -webkit-transition: opacity 2.4s ease 1.1s;
+  transition: opacity 2.4s ease 1.1s;
   -webkit-animation: spin 100s linear infinite;
   -moz-animation: spin 100s linear infinite;
   animation: spin 200s linear infinite;
@@ -110,8 +110,8 @@ export default {
 
 .scenery-canvas.night .rays {
   opacity: 0;
-  -webkit-transition: opacity 0.5s 0s ease;
-  transition: opacity 0.5s 0s ease;
+  -webkit-transition-delay: 0s;
+  transition-delay: 0s;
 }
 
 .scene {
@@ -141,15 +141,13 @@ export default {
   top: 50%;
   overflow: hidden;
   z-index: var(--z-scenery-astro-1, 30);
-  -webkit-transition: all 1.1s 0s ease;
-  transition: all 1.1s 0s ease;
+  -webkit-transition: left 2s ease, top 2s ease;
+  transition: left 2s ease, top 2s ease;
 }
 
 .scenery-canvas.night .moon {
   left: 90%;
   top: -8%;
-  -webkit-transition: all 1.1s 0.4s ease;
-  transition: all 1.1s 0.4s ease;
 }
 
 .moon div:nth-child(n) {
@@ -186,15 +184,13 @@ export default {
   margin-left: 100px;
   top: 0;
   left: 0;
-  -webkit-transition: all 0.8s 0s ease;
-  transition: all 0.8s 0s ease;
+  -webkit-transition: opacity 2.2s ease;
+  transition: opacity 2.2s ease;
   z-index: var(--z-scenery-astro-2, 20);
 }
 
 .scenery-canvas.night .stars {
   opacity: 1;
-  -webkit-transition: all 3s 0.4s ease;
-  transition: all 3s 0.4s ease;
 }
 
 .stars div:nth-child(n) {
@@ -207,15 +203,13 @@ export default {
   height: 1.6px;
   margin-left: 20%;
   margin-top: -20%;
-  -webkit-transition: all 1s 0s ease;
-  transition: all 1s 0s ease;
+  -webkit-transition: margin-left 1.2s ease-out, margin-top 1.2s ease-out;
+  transition: margin-left 1.2s ease-out, margin-top 1.2s ease-out;
 }
 
 .scenery-canvas.night .stars div:nth-child(n) {
   margin-left: 0;
   margin-top: 0;
-  -webkit-transition: all 1s 0.4s ease-out;
-  transition: all 1s 0.4s ease-out;
 }
 
 .stars div:nth-child(1) { left: 25%; top: 30%; }
@@ -228,8 +222,8 @@ export default {
 
 .hills div:nth-child(n) {
   position: absolute;
-  -webkit-transition: all 1s 0.6s ease;
-  transition: all 1s 0.6s ease;
+  -webkit-transition: background-color 1s 0.6s ease;
+  transition: background-color 1s 0.6s ease;
 }
 
 .hills div:nth-child(1) {
@@ -351,8 +345,8 @@ export default {
   transform: translateX(-50%);
   -webkit-animation: pulse 5s ease infinite alternate;
   animation: pulse 5s ease infinite alternate;
-  -webkit-transition: all 1.1s 0.4s ease;
-  transition: all 1.1s 0.4s ease;
+  -webkit-transition: bottom 1.8s ease 0.4s;
+  transition: bottom 1.8s ease 0.4s;
 }
 
 @keyframes pulse {
@@ -369,8 +363,6 @@ export default {
 
 .scenery-canvas.night .sun {
   bottom: calc(var(--scenery-sun-bottom, 0px) - 12rem);
-  -webkit-transition: all 1.1s 0s ease;
-  transition: all 1.1s 0s ease;
 }
 
 /* Mobile portrait: nudge individual hills to better match design */

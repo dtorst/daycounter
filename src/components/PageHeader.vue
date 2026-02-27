@@ -2,7 +2,7 @@
   <header>
     <div class="logo">
       <a href="#">
-        <img src="../assets/daycounter-icon.svg" alt="Daycounter" height="44px" />
+        <img src="../assets/daycounter-logo.svg" alt="Daycounter" height="34px" />
       </a>
     </div>
     <div v-if="!mobile" class="d-flex justify-end">
@@ -119,7 +119,8 @@ header {
   float:left;
   padding-left:16px;
   width:200px;
-  height:44px;
+  height:34px;
+  margin-top: 8px;
 }
 
 /* Ensure buttons maintain custom styling */

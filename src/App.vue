@@ -250,18 +250,6 @@ export default {
   letter-spacing: 0.25px;
 }
 
-@property --myColor1 {
-  syntax: '<color>';
-  initial-value: #BE4405;
-  inherits: false;
-}
-
-@property --myColor2 {
-  syntax: '<color>';
-  initial-value: #F6C60C;
-  inherits: false;
-}
-
 #app-shell {
   position: fixed;
   inset: 0;
@@ -269,15 +257,38 @@ export default {
   clear: both;
   height: 100dvh;
   width: 100vw;
-  --myColor1: var(--theme-sky-top-day);
-  --myColor2: var(--theme-sky-bottom-day);
-  background: linear-gradient(var(--myColor1), var(--myColor2));
-  transition: --myColor1 3s, --myColor2 3s;
+  background: linear-gradient(var(--theme-sky-top-day), var(--theme-sky-bottom-day));
+  isolation: isolate;
 }
 
-#app-shell.night {
-  --myColor1: var(--theme-sky-top-night);
-  --myColor2: var(--theme-sky-bottom-night);
+#app-shell::before,
+#app-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 3s ease 0.9s;
+  z-index: 0;
+}
+
+#app-shell::before {
+  background: linear-gradient(var(--theme-sky-top-day), var(--theme-sky-bottom-day));
+  opacity: 1;
+}
+
+#app-shell::after {
+  background: linear-gradient(var(--theme-sky-top-night), var(--theme-sky-bottom-night));
+  opacity: 0;
+}
+
+#app-shell.night::before {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+#app-shell.night::after {
+  opacity: 1;
+  transition-delay: 0s;
 }
 
 .scenery-layer,
