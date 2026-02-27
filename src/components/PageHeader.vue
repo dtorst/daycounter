@@ -105,11 +105,14 @@ export default {
 </script>
 <style scoped>
 header {
-  display:block;
-  height:60px;
-  padding-top:16px;
-  position: relative;
-  z-index:20;
+  position: fixed;
+  inset: 0 0 auto 0;
+  display: block;
+  width: 100%;
+  height: 60px;
+  padding-top: 16px;
+  z-index: var(--z-header, 60);
+  pointer-events: auto;
 }
 
 .logo {

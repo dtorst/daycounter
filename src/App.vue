@@ -2,57 +2,44 @@
   <VApp>
     <DrawerComponent v-model="drawer" @navigate="handleNavigation" />
     <VMain>
-      <div id="container" :class="{ night: !daysSince }">
-        <FireworksDisplay v-if="todaysDay" />
-        <PageHeader :buttonDisplay="daysSince" @buttonClicked="daysSince = null" @openDrawer="openDrawer" />
-        <div class="interactable">
-          <div class="readout" :class="mobile ? '' : 'mt-6'" v-if="daysSince">
-            <h3 v-if="!mobile" style="margin-bottom:0px;">It's {{today}} </h3>
-            <h3 v-else style="line-height:1.5;margin-bottom:16px;">It's {{today}} </h3>
-            <h1 v-if="!mobile" style="margin-top:0px;">you&#8217;ve been {{reason}} for </h1>
-            <h1 v-else style="margin-top:0px;margin-bottom:16px;">you&#8217;ve been {{reason}} for </h1>
-            <flip-clock :options="flipOptions" />
-            <h1 v-if="!mobile">days</h1>
-            <h1 v-else style="margin-top:16px;">days</h1>
-          </div>
-          <KeepAlive>
-            <PickerGroup :is="currentComponent" v-if="!daysSince" @dayCount="updateDays" />
-          </KeepAlive>
+      <div id="app-shell" :class="{ night: !daysSince }">
+        <div class="scenery-layer">
+          <PageScenery :rayDisplay="daysSince" />
         </div>
-        <PageScenery :rayDisplay="daysSince" />
+        <div class="content-layer">
+          <InteractableLayer
+            :daysSince="daysSince"
+            :reason="reason"
+            :today="today"
+            :currentComponent="currentComponent"
+            @dayCount="updateDays"
+          />
+        </div>
+        <div class="overlay-layer">
+          <PageHeader :buttonDisplay="daysSince" @buttonClicked="daysSince = null" @openDrawer="openDrawer" />
+        </div>
+        <div class="fx-layer" v-if="todaysDay">
+          <FireworksDisplay />
+        </div>
       </div>
     </VMain>
   </VApp>
 </template>
 <script>
-import { FlipClock } from '@mvpleung/flipclock';
 import PageScenery from './components/Scenery'
 import FireworksDisplay from './components/Fireworks'
 import PageHeader from './components/PageHeader'
-import PickerGroup from './components/PickerGroup'  
 import DrawerComponent from './components/Drawer'
+import InteractableLayer from './components/InteractableLayer'
 
 
 export default {
   components: {
-    FlipClock,
     PageScenery,
     FireworksDisplay,
     DrawerComponent,
     PageHeader,
-    PickerGroup
-  },
-  computed: {
-    flipOptions() {
-      return {
-        clockFace: 'Counter',
-        autoStart: false,
-        digit: this.daysSince
-      }
-    },
-    mobile() {
-      return this.$vuetify.display.mobile;
-    }
+    InteractableLayer
   },
 
   data() {
@@ -183,6 +170,43 @@ export default {
 
 /* Override Vuetify's default styles for our custom app */
 #app {
+  --z-scenery: 10;
+  --z-scenery-base: 10;
+  --z-scenery-rays: 5;
+  --z-scenery-scene: 10;
+  --z-scenery-astro-1: 30;
+  --z-scenery-astro-2: 20;
+  --z-content: 30;
+  --z-header: 60;
+  --z-fx: 120;
+  --z-drawer: 2000;
+  --scenery-hill-1-day: #0e580e;
+  --scenery-hill-2-day: #398239;
+  --scenery-hill-3-day: #299029;
+  --scenery-hill-4-day: #196419;
+  --scenery-hill-1-night: #202020;
+  --scenery-hill-2-night: #262525;
+  --scenery-hill-3-night: #262525;
+  --scenery-hill-4-night: #1e1d1d;
+  --scenery-water-top-day: #f5c30e;
+  --scenery-water-bottom-day: #518eac;
+  --scenery-water-top-night: #7fa1bb;
+  --scenery-water-bottom-night: #1d425a;
+  --scenery-sun-color: #f2ef88;
+  --scenery-sun-x: 50%;
+  --scenery-sun-size: 16.5rem;
+  --scenery-sun-bottom: 0px;
+  --scenery-sun-size-mobile: 10rem;
+  --scenery-sun-bottom-mobile: 6rem;
+  --scenery-moon-color: #d9d8d0;
+  --scenery-moon-shadow: #899098;
+  --scenery-rays-top-desktop: 65dvh;
+  --scenery-rays-top-mobile: 40svh;
+  --scenery-scene-bottom-mobile: -80px;
+  --theme-sky-top-day: #BE4405;
+  --theme-sky-bottom-day: #F6C60C;
+  --theme-sky-top-night: #111936;
+  --theme-sky-bottom-night: #285A7B;
   margin: 0;
   padding: 0;
   font-size: 16px;
@@ -238,38 +262,56 @@ export default {
   inherits: false;
 }
 
-#container {
-  position: relative;
-  z-index:10;
+#app-shell {
+  position: fixed;
+  inset: 0;
   overflow: hidden;
-  top:0px;
-  clear:both;
-  height: 100vh; 
-  height: 100svh;  /* small viewport height (iOS) */
+  clear: both;
   height: 100dvh;
   width: 100vw;
+  --myColor1: var(--theme-sky-top-day);
+  --myColor2: var(--theme-sky-bottom-day);
   background: linear-gradient(var(--myColor1), var(--myColor2));
   transition: --myColor1 3s, --myColor2 3s;
 }
 
-
-#container.night {
-  --myColor1: #111936;
-  --myColor2: #285A7B;
+#app-shell.night {
+  --myColor1: var(--theme-sky-top-night);
+  --myColor2: var(--theme-sky-bottom-night);
 }
 
-.interactable {
-  display: flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+.scenery-layer,
+.content-layer,
+.overlay-layer,
+.fx-layer {
+  position: fixed;
+  inset: 0;
 }
 
-.readout {
-  text-align: center;
-  align-content: center;
-} 
+.scenery-layer {
+  z-index: var(--z-scenery);
+  pointer-events: none;
+}
+
+.content-layer {
+  z-index: var(--z-content);
+  pointer-events: none;
+}
+
+.overlay-layer {
+  z-index: var(--z-header);
+  pointer-events: none;
+}
+
+.overlay-layer > * {
+  pointer-events: auto;
+}
+
+.fx-layer {
+  z-index: var(--z-fx);
+  pointer-events: none;
+}
+
 #app .calculate-days, #app .update-button {
   height:36px !important;
   width:96px !important;
@@ -301,10 +343,6 @@ export default {
 }
 
 @media (max-width: 599px) and (orientation: portrait) {
-  
-  .readout {
-    margin-top: 100px !important;
-  }
   #app h1 {
     font-size: 2.25rem !important;
     line-height: 2rem;

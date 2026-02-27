@@ -1,6 +1,7 @@
 <template>
     <VNavigationDrawer 
       v-model="drawer" 
+      class="daycounter-drawer"
       temporary
       location="right"
       width="360"
@@ -97,6 +98,7 @@ export default {
 :deep(.v-navigation-drawer) {
   background: rgba(17, 25, 54, 0.95) !important;
   backdrop-filter: blur(10px);
+  z-index: var(--z-drawer, 2000) !important;
 }
 
 :deep(.v-list-item-title) {

@@ -37,7 +37,16 @@
       </template>
       <template v-slot:next="{ props }">
         <v-btn
-          v-if="currentIndex < 3"
+          v-if="currentIndex === 0"
+          color="primary"
+          rounded
+          variant="outlined"
+          append-icon="mdi-chevron-right"
+          @click="props.onClick"
+        ><span class="since-mobile">since</span></v-btn>
+
+        <v-btn
+          v-else-if="currentIndex === 1 || currentIndex === 2"
           color="primary"
           variant="outlined"
           icon="mdi-chevron-right"
@@ -48,11 +57,8 @@
       </template>
       <v-carousel-item>
         <div :class="{ 'other-active': reason === 'other' }">
-          <VueScrollPicker :options="reasons" v-model="reason" class="mobile-picker" />
+          <VueScrollPicker :options="reasons" v-model="reason" class="mobile-picker mobile-reasons-picker" />
           <VTextField v-if="reason === 'other'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other" />
-        </div>
-        <div class="text-center">
-          <span class="since">since</span>
         </div>
       </v-carousel-item>
       <v-carousel-item>
@@ -279,6 +285,10 @@ export default {
   font-weight:200;
 }
 
+.since-mobile {
+  font-family:'Montserrat',sans-serif;
+  text-transform: lowercase;
+}
 
 .reason-column {
   width:14.25rem;
@@ -433,7 +443,7 @@ export default {
   display: none !important;
 }
 .other-reason-input .v-field__input {
-  text-align: center;
+  text-align: left;
   font-size: 2rem;
   font-family:'Montserrat',sans-serif;
   font-weight:200;
@@ -441,6 +451,7 @@ export default {
   color: #F2EF88;
   height: 1.2em;
   padding: 0;
+  padding-left: 3rem;
 }
 .other-reason-input input::placeholder {
   color: #ccc;
@@ -448,6 +459,16 @@ export default {
 
 .picker-group.mobile .vue-scroll-picker-item {
   line-height: 1.75em; /* was 1.2em; the component's layers assume 2em */
+}
+
+/* Mobile reasons list only: left-align item labels */
+.picker-group.mobile .mobile-reasons-picker .vue-scroll-picker-item {
+  text-align: left;
+  padding-left: 3rem;
+}
+
+.picker-group.mobile {
+  --mobile-picker-midline-offset: 0px;
 }
 
 /* Center mobile carousel pickers and overlay misc labels */
@@ -461,6 +482,9 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  height: 100%;
+  transform: translateY(var(--mobile-picker-midline-offset, 0px));
 }
 .picker-group.mobile .v-carousel-item .text-center {
   position: absolute;
@@ -481,7 +505,7 @@ export default {
   font-size: 1.25rem !important;
 }
 /* Center Vuetify carousel controls exactly on the midline (mobile only) */
-/*.picker-group.mobile .v-window__controls {
-  height: 83% !important;
-} */
+.picker-group.mobile .v-window__controls {
+  transform: translateY(var(--mobile-picker-midline-offset, 0px));
+}
 </style>
