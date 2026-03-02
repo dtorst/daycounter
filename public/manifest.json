@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Daycounter",
+  "version": "1.0.0",
+  "description": "Helping you count - and celebrate - how far you've come every day.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  }
+}

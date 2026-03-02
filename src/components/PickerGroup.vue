@@ -17,7 +17,7 @@
       <VueScrollPicker :options="years" v-model="selectedYear" class="year-column" />
     </div>
     <div class="btn-container">
-      <button class="calculate-days" @click="calculateDays"><span class="material-symbols-outlined" style="line-height:30px;">sunny</span></button>
+      <button class="calculate-days" @click="calculateDays"><VIcon size="20" style="line-height:30px;">mdi-white-balance-sunny</VIcon></button>
     </div>
   </div>
   <div v-else class="picker-group mobile">
@@ -249,10 +249,8 @@ export default {
       return null;
     },
     calculateDays() {
-      let selectedDate = new Date(`${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}`);
-      let currentDate = new Date();
-      let offset = ((currentDate.getTimezoneOffset()) - (selectedDate.getTimezoneOffset())) * 60000;
-      let days = Math.floor((currentDate - selectedDate - offset) / 86400000);
+      const { computeDaysSince } = require('../utils/params.js');
+      const days = computeDaysSince(this.selectedYear, this.selectedMonth, this.selectedDay);
       
       const computedReason = this.reason === 'other'
         ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other')

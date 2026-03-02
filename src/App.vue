@@ -1,6 +1,6 @@
 <template>  
   <VApp>
-    <DrawerComponent v-model="drawer" @navigate="handleNavigation" />
+    <DrawerComponent v-model="drawer" />
     <VMain>
       <div id="app-shell" :class="{ night: !daysSince }">
         <div class="scenery-layer">
@@ -31,7 +31,18 @@ import FireworksDisplay from './components/Fireworks'
 import PageHeader from './components/PageHeader'
 import DrawerComponent from './components/Drawer'
 import InteractableLayer from './components/InteractableLayer'
+import {
+  computeDaysSince,
+  formatLongDate,
+  parseQueryParams,
+  persistDayCount,
+  persistSelections,
+  readDayCount,
+  resolveDayCountFromSelections,
+  resolveReason
+} from './utils/params.js'
 
+const RESUME_SYNC_DELAY_MS = 120
 
 export default {
   components: {
@@ -41,129 +52,178 @@ export default {
     PageHeader,
     InteractableLayer
   },
-
+  beforeUnmount() {
+    document.removeEventListener('visibilitychange', this.onVisibilityChange)
+    window.removeEventListener('focus', this.onWindowFocus)
+    window.removeEventListener('pageshow', this.onPageShow)
+    if (this.resumeSyncTimer) {
+      clearTimeout(this.resumeSyncTimer)
+      this.resumeSyncTimer = null
+    }
+  },
   data() {
     return {
       daysSince: null,
       todaysDay: false,
       currentComponent: null,
       reason: null,
-      today: new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"long", day:"numeric"}),
-      drawer: false
+      today: formatLongDate(),
+      drawer: false,
+      resumeSyncTimer: null
     }
   },
   mounted() {
-    const applied = this.applyDayCountFromUrl();
+    const applied = this.applyDayCountFromUrl()
     if (!applied) {
-      this.restoreDayCount();
+      this.refreshDayCountFromStorage()
     }
-    this.updateTodaysDayFromSelections();
+    this.refreshTodayLabel()
+    this.updateTodaysDayFromSelections()
+    document.addEventListener('visibilitychange', this.onVisibilityChange)
+    window.addEventListener('focus', this.onWindowFocus)
+    window.addEventListener('pageshow', this.onPageShow)
   },
   methods: {
-   applyDayCountFromUrl() {
-     try {
-      const { parseQueryParams, computeDaysSince, persistSelections, persistDayCount } = require('./utils/params.js');
-      const parsed = parseQueryParams(window.location.search, { strict: true });
-      if (!parsed || !parsed.isComplete) return false;
+    applyDayCountFromUrl() {
+      try {
+        const parsed = parseQueryParams(window.location.search, { strict: true })
+        if (!parsed || !parsed.isComplete) return false
 
-      const days = (typeof parsed.days === 'number')
-        ? parsed.days
-        : computeDaysSince(parsed.year, parsed.month, parsed.day);
-       const computedReason = parsed.reason === 'other'
-         ? ((parsed.otherReason && parsed.otherReason.trim().length > 0) ? parsed.otherReason.trim() : 'other')
-         : parsed.reason;
+        const hasSelectedDate = (
+          typeof parsed.year === 'number' &&
+          typeof parsed.month === 'number' &&
+          typeof parsed.day === 'number'
+        )
+        const days = hasSelectedDate
+          ? computeDaysSince(parsed.year, parsed.month, parsed.day)
+          : parsed.days
+        const computedReason = resolveReason(parsed.reason, parsed.otherReason)
+        if (!Number.isFinite(days) || days < 0 || !computedReason) return false
 
-       persistSelections({
-         reason: parsed.reason,
-         otherReason: parsed.otherReason,
-         month: parsed.month,
-         day: parsed.day,
-         year: parsed.year,
-       });
+        persistSelections({
+          reason: parsed.reason,
+          otherReason: parsed.otherReason,
+          month: parsed.month,
+          day: parsed.day,
+          year: parsed.year
+        })
 
-      persistDayCount({ days, why: computedReason });
+        persistDayCount({ days, why: computedReason })
 
-       this.daysSince = days;
-       this.reason = computedReason;
-       this.currentComponent = 'PickerGroup';
-       return true;
-     } catch (e) {
-       return false;
-     }
-   },
-   updateDays({days,why}) {
-     this.daysSince = days;
-     this.reason = why;
-     this.currentComponent = 'PickerGroup';
-     this.updateTodaysDayFromSelections();
-   },
-   isDateToday() {
-    if (this.today) {
-      return true;
+        this.daysSince = days
+        this.reason = computedReason
+        this.currentComponent = 'PickerGroup'
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    updateDays({ days, why }) {
+      this.daysSince = days
+      this.reason = why
+      this.currentComponent = 'PickerGroup'
+      this.updateTodaysDayFromSelections()
+    },
+    openDrawer() {
+      this.drawer = true
+    },
+    refreshTodayLabel() {
+      this.today = formatLongDate()
+    },
+    refreshDayCountFromStorage() {
+      const resolved = resolveDayCountFromSelections()
+      if (resolved) {
+        this.daysSince = resolved.days
+        this.reason = resolved.why
+        this.currentComponent = 'PickerGroup'
+        persistDayCount(resolved)
+        return
+      }
+      const cached = readDayCount()
+      if (cached) {
+        this.daysSince = cached.days
+        this.reason = cached.why
+      }
+    },
+    onVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        this.scheduleHandleAppResumed()
+      }
+    },
+    onWindowFocus() {
+      this.scheduleHandleAppResumed()
+    },
+    onPageShow() {
+      this.scheduleHandleAppResumed()
+    },
+    scheduleHandleAppResumed() {
+      if (this.resumeSyncTimer) {
+        clearTimeout(this.resumeSyncTimer)
+      }
+      this.resumeSyncTimer = setTimeout(() => {
+        this.resumeSyncTimer = null
+        this.handleAppResumed()
+      }, RESUME_SYNC_DELAY_MS)
+    },
+    handleAppResumed() {
+      this.refreshTodayLabel()
+      this.refreshDayCountFromStorage()
+      this.updateTodaysDayFromSelections()
+    },
+    updateTodaysDayFromSelections() {
+      try {
+        const now = new Date()
+        const todayMonth = now.getMonth() + 1
+        const todayDay = now.getDate()
+
+        const raw = localStorage.getItem('daycounterSelections')
+        if (!raw) {
+          this.todaysDay = false
+          return
+        }
+
+        const data = JSON.parse(raw)
+        const selectedMonth = Number(
+          data && (data.selectedMonth !== undefined ? data.selectedMonth : data.month)
+        )
+        const selectedDay = Number(
+          data && (data.selectedDay !== undefined ? data.selectedDay : data.day)
+        )
+
+        this.todaysDay = (
+          Number.isFinite(selectedMonth) &&
+          Number.isFinite(selectedDay) &&
+          selectedMonth === todayMonth &&
+          selectedDay === todayDay
+        )
+      } catch (e) {
+        this.todaysDay = false
+      }
     }
-    return false;
-   },
-   openDrawer() {
-    this.drawer = true;
-   },
-   updateTodaysDayFromSelections() {
-     try {
-       const now = new Date();
-       const todayMonth = now.getMonth() + 1; // 1-12
-       const todayDay = now.getDate(); // 1-31
-
-       const raw = localStorage.getItem('daycounterSelections');
-       if (!raw) {
-         this.todaysDay = false;
-         return;
-       }
-
-       const data = JSON.parse(raw);
-       const selectedMonth = Number(
-         data && (data.selectedMonth !== undefined ? data.selectedMonth : data.month)
-       );
-       const selectedDay = Number(
-         data && (data.selectedDay !== undefined ? data.selectedDay : data.day)
-       );
-
-       this.todaysDay = (
-         Number.isFinite(selectedMonth) &&
-         Number.isFinite(selectedDay) &&
-         selectedMonth === todayMonth &&
-         selectedDay === todayDay
-       );
-     } catch (e) {
-       this.todaysDay = false;
-     }
-   },
-   restoreDayCount() {
-     try {
-       const raw = localStorage.getItem('daycounterDayCount');
-       if (!raw) return;
-       const data = JSON.parse(raw);
-       if (data && typeof data === 'object' && typeof data.days === 'number' && typeof data.why === 'string') {
-         this.daysSince = data.days;
-         this.reason = data.why;
-       }
-     } catch (e) {
-       // ignore corrupt payloads
-     }
-   },
-   handleNavigation(route) {
-    this.drawer = false;
-    this.$router.push(route);
-   }
- }
-
+  }
 }
-
 </script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@100..900&display=swap');
+
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('./assets/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/fonts/Montserrat-VariableFont_wght.ttf') format('truetype-variations');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'Sugar Peachy';
-  src: url('assets/sugar-peachy.otf') format('opentype');
+  src: url('./assets/fonts/sugar-peachy.otf') format('opentype');
   font-style: normal;
   font-display: block;
 }

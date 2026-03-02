@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "npm run build:web",
+    "build:web": "NODE_ENV=production vue-cli-service build",
+    "build:ext": "NODE_ENV=production vue-cli-service build --mode extension --dest dist-extension",
+    "package:ext": "npm run build:ext && cd dist-extension && zip -r ../daycounter-extension.zip .",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

@@ -26,8 +26,18 @@ const firebaseConfig = {
   measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+const buildTarget = process.env.VUE_APP_BUILD_TARGET || 'web';
+const isExtensionBuild = buildTarget === 'extension';
+const hasFirebaseConfig = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId
+);
+
+if (!isExtensionBuild && hasFirebaseConfig) {
+  initializeApp(firebaseConfig);
+}
 // eslint-disable-next-line
 // const analytics = getAnalytics(app);
 
