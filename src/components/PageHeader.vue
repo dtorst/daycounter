@@ -5,7 +5,7 @@
         <img src="../assets/daycounter-logo.svg" alt="Daycounter" height="34px" />
       </a>
     </div>
-    <div v-if="!mobile" class="d-flex justify-end">
+    <div v-if="!mobile" class="d-flex justify-end me-4">
       <VFadeTransition>
         <VBtn class="text-capitalize" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button" prepend-icon="mdi-calendar-edit">Update</VBtn>
       </VFadeTransition>
@@ -16,9 +16,9 @@
           </VFadeTransition>
         </template>
       </VTooltip>
-      <VBtn @click='clickOpenDrawer()' color="primary" class="ms-2 me-4" size="small" variant="text" icon="mdi-menu" type="button"/>
+      <VBtn v-if="showInfoMenu" @click='clickOpenDrawer()' color="primary" class="ms-2" size="small" variant="text" icon="mdi-menu" type="button"/>
     </div>    
-    <div v-else class="d-flex justify-end">
+    <div v-else class="d-flex justify-end me-2">
       <VFadeTransition>
         <VBtn color="primary" variant="text" size="small" icon="mdi-calendar-edit" v-if="buttonDisplay" @click='clickUpdate()' />
       </VFadeTransition>
@@ -29,7 +29,7 @@
           </VFadeTransition>
         </template>
       </VTooltip>
-      <VBtn @click='clickOpenDrawer()' color="primary" class="ms-1 me-2" size="small" variant="text" icon="mdi-menu" type="button"/>
+      <VBtn v-if="showInfoMenu" @click='clickOpenDrawer()' color="primary" class="ms-1" size="small" variant="text" icon="mdi-menu" type="button"/>
     </div>
   </header>
 </template>
@@ -37,7 +37,15 @@
 <script>
 export default {
   name: 'PageHeader',
-  props: ["buttonDisplay"],
+  props: {
+    buttonDisplay: {
+      default: false
+    },
+    showInfoMenu: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       isCopied: false,
@@ -60,6 +68,7 @@ export default {
 			this.$emit('buttonClicked')
 		},
 		clickOpenDrawer() {
+      if (!this.showInfoMenu) return
 			this.$emit('openDrawer')
 		},
     buildShareUrl() {

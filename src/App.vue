@@ -1,6 +1,6 @@
 <template>  
   <VApp>
-    <DrawerComponent v-model="drawer" />
+    <DrawerComponent v-if="!isExtensionBuild" v-model="drawer" />
     <VMain>
       <div id="app-shell" :class="{ night: !daysSince }">
         <div class="scenery-layer">
@@ -16,7 +16,12 @@
           />
         </div>
         <div class="overlay-layer">
-          <PageHeader :buttonDisplay="daysSince" @buttonClicked="daysSince = null" @openDrawer="openDrawer" />
+          <PageHeader
+            :buttonDisplay="daysSince"
+            :showInfoMenu="!isExtensionBuild"
+            @buttonClicked="daysSince = null"
+            @openDrawer="openDrawer"
+          />
         </div>
         <div class="fx-layer" v-if="todaysDay">
           <FireworksDisplay />
@@ -29,7 +34,7 @@
 import PageScenery from './components/Scenery'
 import FireworksDisplay from './components/Fireworks'
 import PageHeader from './components/PageHeader'
-import DrawerComponent from './components/Drawer'
+import DrawerComponent from '@/components/Drawer'
 import InteractableLayer from './components/InteractableLayer'
 import {
   computeDaysSince,
@@ -43,6 +48,7 @@ import {
 } from './utils/params.js'
 
 const RESUME_SYNC_DELAY_MS = 120
+const IS_EXTENSION_BUILD = process.env.VUE_APP_BUILD_TARGET === 'extension'
 
 export default {
   components: {
@@ -69,6 +75,7 @@ export default {
       reason: null,
       today: formatLongDate(),
       drawer: false,
+      isExtensionBuild: IS_EXTENSION_BUILD,
       resumeSyncTimer: null
     }
   },
@@ -125,6 +132,7 @@ export default {
       this.updateTodaysDayFromSelections()
     },
     openDrawer() {
+      if (this.isExtensionBuild) return
       this.drawer = true
     },
     refreshTodayLabel() {
