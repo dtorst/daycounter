@@ -1,9 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Daycounter",
-  "version": "1.0.0",
-  "description": "Helping you count - and celebrate - how far you've come every day.",
+  "version": "1.0.1",
+  "description": "Helping you count the days and celebrate how far you've come every day.",
   "chrome_url_overrides": {
     "newtab": "index.html"
+  },
+  "icons": {
+    "16": "icons/16x16.png",
+    "32": "icons/32x32.png",
+    "48": "icons/48x48.png",
+    "128": "icons/128x128.png"
   }
 }
