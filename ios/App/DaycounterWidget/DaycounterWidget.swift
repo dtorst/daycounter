@@ -5,6 +5,7 @@
 
 import WidgetKit
 import SwiftUI
+import UIKit
 
 private enum DaycounterWidgetStorage {
     static let suiteName = "group.com.davidtorstenson.daycounter"
@@ -64,25 +65,12 @@ struct MediumDayCountView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let height = proxy.size.height
-
             ZStack {
                 DaycounterSunriseForeground()
 
-                VStack(spacing: 8) {
-                    Spacer(minLength: 0)
-
-                    FlipDayCountView(days: days)
-                        .frame(maxWidth: proxy.size.width * 0.84)
-
-                    Text("days")
-                        .font(.system(size: max(16, height * 0.15), weight: .black, design: .rounded))
-                        .foregroundStyle(Color.daycounterCream)
-                        .shadow(color: .black.opacity(0.18), radius: 2, x: 0, y: 2)
-                        .offset(y: -2)
-                }
-                .padding(.horizontal, 18)
-                .padding(.vertical, 14)
+                FlipDayCountView(days: days)
+                    .frame(maxWidth: proxy.size.width * 0.84)
+                    .padding(.horizontal, 18)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -93,19 +81,9 @@ struct AccessoryDayCountView: View {
     let days: Int
 
     var body: some View {
-        HStack(spacing: 8) {
-            Text("\(days)")
-                .font(.system(size: 28, weight: .black, design: .rounded))
-                .monospacedDigit()
-
-            Text("days")
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                .textCase(.uppercase)
-                .opacity(0.86)
-        }
-        .foregroundStyle(.white)
-        .lineLimit(1)
-        .minimumScaleFactor(0.58)
+        FlipDayCountView(days: days)
+            .frame(maxWidth: 112)
+            .padding(.vertical, 5)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding(.horizontal, 8)
     }
@@ -138,20 +116,7 @@ struct FlipDigitCard: View {
 
             ZStack {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.15, green: 0.15, blue: 0.15),
-                                Color(red: 0.06, green: 0.06, blue: 0.06)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-
-                Rectangle()
-                    .fill(Color.black.opacity(0.34))
-                    .frame(height: 1)
+                    .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
 
                 Text(digit)
                     .font(.system(size: min(width * 1.55, height * 0.76), weight: .heavy, design: .rounded))
@@ -166,6 +131,12 @@ struct FlipDigitCard: View {
                     .fill(Color.white.opacity(0.08))
                     .frame(height: height * 0.48)
             }
+            .overlay {
+                Rectangle()
+                    .fill(Color.black.opacity(0.4))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 1)
+            }
             .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
             .shadow(color: .black.opacity(0.45), radius: 3, x: 0, y: 2)
         }
@@ -177,7 +148,6 @@ struct DaycounterSunriseBackground: View {
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
-            let raySize = max(size.width, size.height) * 1.9
 
             ZStack {
                 LinearGradient(
@@ -189,13 +159,15 @@ struct DaycounterSunriseBackground: View {
                     endPoint: .bottom
                 )
 
-                SunRaysShape(rayCount: 28)
-                    .fill(Color.daycounterSun.opacity(0.34))
-                    .frame(width: raySize, height: raySize)
-                    .rotationEffect(.degrees(-8))
-                    .position(x: size.width * 0.5, y: size.height * 0.8)
-                    .blendMode(.screen)
+                WidgetSceneryImage(
+                    name: "rays",
+                    designSize: CGSize(width: 2171, height: 2171),
+                    designCenter: CGPoint(x: 302, y: 260)
+                )
+                .opacity(0.55)
+                .blendMode(.screen)
             }
+            .frame(width: size.width, height: size.height)
         }
     }
 }
@@ -204,70 +176,46 @@ struct DaycounterSunriseForeground: View {
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
-            let sunSize = min(size.width * 0.34, size.height * 0.64)
-            let baseY = size.height * 0.94
+            let sunSize = min(size.width * 0.215, size.height * 0.46)
 
             ZStack {
                 Circle()
                     .fill(Color.daycounterSun)
                     .frame(width: sunSize, height: sunSize)
-                    .position(x: size.width * 0.5, y: baseY - sunSize * 0.36)
+                    .position(x: size.width * 0.5, y: size.height * 0.93)
 
-                Ellipse()
-                    .fill(Color(red: 0.05, green: 0.34, blue: 0.05))
-                    .frame(width: size.width * 1.08, height: size.height * 0.92)
-                    .position(x: size.width * 0.16, y: size.height * 1.2)
-
-                Ellipse()
-                    .fill(Color(red: 0.22, green: 0.51, blue: 0.22))
-                    .frame(width: size.width * 1.1, height: size.height * 0.76)
-                    .position(x: size.width * 0.78, y: size.height * 1.14)
-
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.96, green: 0.76, blue: 0.06),
-                        Color(red: 0.32, green: 0.56, blue: 0.67)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
+                WidgetSceneryImage(
+                    name: "lake",
+                    designSize: CGSize(width: 257, height: 21),
+                    designCenter: CGPoint(x: 301.5, y: 271.5)
                 )
-                .frame(height: size.height * 0.2)
-                .frame(maxHeight: .infinity, alignment: .bottom)
+
+                WidgetSceneryImage(
+                    name: "hill1",
+                    designSize: CGSize(width: 208.5, height: 92.5),
+                    designCenter: CGPoint(x: 103, y: 236)
+                )
+
+                WidgetSceneryImage(
+                    name: "hill2",
+                    designSize: CGSize(width: 289, height: 59),
+                    designCenter: CGPoint(x: 155, y: 252.5)
+                )
+
+                WidgetSceneryImage(
+                    name: "hill3",
+                    designSize: CGSize(width: 300.5, height: 58),
+                    designCenter: CGPoint(x: 455, y: 253)
+                )
+
+                WidgetSceneryImage(
+                    name: "hill4",
+                    designSize: CGSize(width: 166.5, height: 112),
+                    designCenter: CGPoint(x: 520, y: 226)
+                )
             }
             .allowsHitTesting(false)
         }
-    }
-}
-
-struct SunRaysShape: Shape {
-    let rayCount: Int
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let innerRadius = min(rect.width, rect.height) * 0.12
-        let outerRadius = min(rect.width, rect.height) * 0.5
-        let step = (CGFloat.pi * 2) / CGFloat(rayCount)
-
-        for index in 0..<rayCount {
-            let baseAngle = CGFloat(index) * step
-            let startAngle = baseAngle - step * 0.26
-            let endAngle = baseAngle + step * 0.26
-
-            path.move(to: point(from: center, radius: innerRadius, angle: baseAngle))
-            path.addLine(to: point(from: center, radius: outerRadius, angle: startAngle))
-            path.addLine(to: point(from: center, radius: outerRadius, angle: endAngle))
-            path.closeSubpath()
-        }
-
-        return path
-    }
-
-    private func point(from center: CGPoint, radius: CGFloat, angle: CGFloat) -> CGPoint {
-        CGPoint(
-            x: center.x + cos(angle) * radius,
-            y: center.y + sin(angle) * radius
-        )
     }
 }
 
@@ -275,7 +223,59 @@ private extension Color {
     static let daycounterSkyTop = Color(red: 0.75, green: 0.27, blue: 0.02)
     static let daycounterSkyBottom = Color(red: 0.96, green: 0.78, blue: 0.05)
     static let daycounterSun = Color(red: 0.95, green: 0.94, blue: 0.53)
-    static let daycounterCream = Color(red: 0.91, green: 0.91, blue: 0.91)
+}
+
+struct WidgetSceneryImage: View {
+    private static let designCanvasSize = CGSize(width: 603, height: 282)
+
+    let name: String
+    let designSize: CGSize
+    let designCenter: CGPoint
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scaleX = proxy.size.width / Self.designCanvasSize.width
+            let scaleY = proxy.size.height / Self.designCanvasSize.height
+
+            if let image = WidgetImageStore.image(named: name) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(
+                        width: designSize.width * scaleX,
+                        height: designSize.height * scaleY
+                    )
+                    .position(
+                        x: designCenter.x * scaleX,
+                        y: designCenter.y * scaleY
+                    )
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+private enum WidgetImageStore {
+    static func image(named name: String) -> UIImage? {
+        let resourceName = rawResourceName(for: name)
+
+        if let path = Bundle.main.path(forResource: resourceName, ofType: "png") {
+            return UIImage(contentsOfFile: path)
+        }
+
+        return UIImage(named: name)
+    }
+
+    private static func rawResourceName(for name: String) -> String {
+        switch name {
+        case "rays":
+            return "rays"
+        case "lake":
+            return "lake@2x"
+        default:
+            return "\(name)@2x"
+        }
+    }
 }
 
 struct DaycounterWidget: Widget {

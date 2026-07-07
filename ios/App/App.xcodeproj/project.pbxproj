@@ -23,6 +23,12 @@
 		D6CAAF152FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF142FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift */; };
 		D6CAAF172FFC7DAA00F1E4EF /* DaycounterWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF162FFC7DAA00F1E4EF /* DaycounterWidget.swift */; };
 		D6CAAF192FFC7DAC00F1E4EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF182FFC7DAC00F1E4EF /* Assets.xcassets */; };
+		D6CAAF342FFC920000F1E4EF /* hill1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF282FFC920000F1E4EF /* hill1@2x.png */; };
+		D6CAAF352FFC920000F1E4EF /* hill2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF292FFC920000F1E4EF /* hill2@2x.png */; };
+		D6CAAF362FFC920000F1E4EF /* hill3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2A2FFC920000F1E4EF /* hill3@2x.png */; };
+		D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */; };
+		D6CAAF382FFC920000F1E4EF /* lake@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */; };
+		D6CAAF392FFC920000F1E4EF /* rays.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2D2FFC920000F1E4EF /* rays.png */; };
 		D6CAAF1D2FFC7DAC00F1E4EF /* DaycounterWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D6CAAF0C2FFC7DAA00F1E4EF /* DaycounterWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -71,6 +77,12 @@
 		D6CAAF142FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaycounterWidgetLiveActivity.swift; sourceTree = "<group>"; };
 		D6CAAF162FFC7DAA00F1E4EF /* DaycounterWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaycounterWidget.swift; sourceTree = "<group>"; };
 		D6CAAF182FFC7DAC00F1E4EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D6CAAF282FFC920000F1E4EF /* hill1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill1@2x.png"; sourceTree = "<group>"; };
+		D6CAAF292FFC920000F1E4EF /* hill2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill2@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2A2FFC920000F1E4EF /* hill3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill3@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill4@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/lake@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2D2FFC920000F1E4EF /* rays.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Assets.xcassets/rays.png; sourceTree = "<group>"; };
 		D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6CAAF222FFC85CE00F1E4EF /* AppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppDebug.entitlements; sourceTree = "<group>"; };
 		D6CAAF232FFC862100F1E4EF /* DaycounterWidgetExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DaycounterWidgetExtensionDebug.entitlements; sourceTree = "<group>"; };
@@ -163,6 +175,12 @@
 				D6CAAF142FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift */,
 				D6CAAF162FFC7DAA00F1E4EF /* DaycounterWidget.swift */,
 				D6CAAF182FFC7DAC00F1E4EF /* Assets.xcassets */,
+				D6CAAF282FFC920000F1E4EF /* hill1@2x.png */,
+				D6CAAF292FFC920000F1E4EF /* hill2@2x.png */,
+				D6CAAF2A2FFC920000F1E4EF /* hill3@2x.png */,
+				D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */,
+				D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */,
+				D6CAAF2D2FFC920000F1E4EF /* rays.png */,
 				D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */,
 			);
 			path = DaycounterWidget;
@@ -268,6 +286,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6CAAF392FFC920000F1E4EF /* rays.png in Resources */,
+				D6CAAF382FFC920000F1E4EF /* lake@2x.png in Resources */,
+				D6CAAF342FFC920000F1E4EF /* hill1@2x.png in Resources */,
+				D6CAAF352FFC920000F1E4EF /* hill2@2x.png in Resources */,
+				D6CAAF362FFC920000F1E4EF /* hill3@2x.png in Resources */,
+				D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */,
 				D6CAAF192FFC7DAC00F1E4EF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
