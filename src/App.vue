@@ -46,6 +46,9 @@ import {
   resolveDayCountFromSelections,
   resolveReason
 } from './utils/params.js'
+import { isAnniversaryToday } from './shared/dayCount'
+import { readDayCounterState } from './storage/browserStorage'
+import { syncWidgetDayCount as syncNativeWidgetDayCount } from './native/dayCounterWidgetBridge'
 
 const RESUME_SYNC_DELAY_MS = 120
 const IS_EXTENSION_BUILD = process.env.VUE_APP_BUILD_TARGET === 'extension'
@@ -116,6 +119,7 @@ export default {
         })
 
         persistDayCount({ days, why: computedReason })
+        this.syncNativeWidgetDayCount(days)
 
         this.daysSince = days
         this.reason = computedReason
@@ -130,6 +134,7 @@ export default {
       this.reason = why
       this.currentComponent = 'PickerGroup'
       this.updateTodaysDayFromSelections()
+      this.syncNativeWidgetDayCount(days)
     },
     openDrawer() {
       if (this.isExtensionBuild) return
@@ -145,13 +150,18 @@ export default {
         this.reason = resolved.why
         this.currentComponent = 'PickerGroup'
         persistDayCount(resolved)
+        this.syncNativeWidgetDayCount(resolved.days)
         return
       }
       const cached = readDayCount()
       if (cached) {
         this.daysSince = cached.days
         this.reason = cached.why
+        this.syncNativeWidgetDayCount(cached.days)
       }
+    },
+    syncNativeWidgetDayCount(days) {
+      syncNativeWidgetDayCount(days)
     },
     onVisibilityChange() {
       if (document.visibilityState === 'visible') {
@@ -180,30 +190,7 @@ export default {
     },
     updateTodaysDayFromSelections() {
       try {
-        const now = new Date()
-        const todayMonth = now.getMonth() + 1
-        const todayDay = now.getDate()
-
-        const raw = localStorage.getItem('daycounterSelections')
-        if (!raw) {
-          this.todaysDay = false
-          return
-        }
-
-        const data = JSON.parse(raw)
-        const selectedMonth = Number(
-          data && (data.selectedMonth !== undefined ? data.selectedMonth : data.month)
-        )
-        const selectedDay = Number(
-          data && (data.selectedDay !== undefined ? data.selectedDay : data.day)
-        )
-
-        this.todaysDay = (
-          Number.isFinite(selectedMonth) &&
-          Number.isFinite(selectedDay) &&
-          selectedMonth === todayMonth &&
-          selectedDay === todayDay
-        )
+        this.todaysDay = isAnniversaryToday(readDayCounterState())
       } catch (e) {
         this.todaysDay = false
       }

@@ -1,16 +1,24 @@
-// Shared utilities for query params, selections persistence, and URL building
+// Shared utilities for query params, date formatting, and URL building
+import {
+  coerceNumber,
+  computeDaysSince,
+  resolveReason
+} from '../shared/dayCount'
+import {
+  persistDayCount,
+  persistSelections,
+  readDayCount,
+  readSelections,
+  resolveDayCountFromStorage
+} from '../storage/browserStorage'
 
-function coerceNumber(value) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-}
-
-export function resolveReason(reason, otherReason) {
-  const normalizedReason = typeof reason === 'string' ? reason.trim() : '';
-  const normalizedOtherReason = typeof otherReason === 'string' ? otherReason.trim() : '';
-  return normalizedReason === 'other'
-    ? (normalizedOtherReason || 'other')
-    : normalizedReason;
+export { computeDaysSince, resolveReason }
+export {
+  persistDayCount,
+  persistSelections,
+  readDayCount,
+  readSelections,
+  resolveDayCountFromStorage as resolveDayCountFromSelections
 }
 
 export function formatLongDate(date = new Date()) {
@@ -20,24 +28,6 @@ export function formatLongDate(date = new Date()) {
     month: 'long',
     day: 'numeric'
   });
-}
-
-function readSelectionDateParts(selections) {
-  const year = Number(
-    selections && (selections.selectedYear !== undefined ? selections.selectedYear : selections.year)
-  );
-  const month = Number(
-    selections && (selections.selectedMonth !== undefined ? selections.selectedMonth : selections.month)
-  );
-  const day = Number(
-    selections && (selections.selectedDay !== undefined ? selections.selectedDay : selections.day)
-  );
-
-  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
-    return null;
-  }
-
-  return { year, month, day };
 }
 
 export function parseQueryParams(search, { strict = false } = {}) {
@@ -96,98 +86,6 @@ export function parseQueryParams(search, { strict = false } = {}) {
   }
 }
 
-export function computeDaysSince(year, month, day) {
-  const y = Number(year);
-  const m = Number(month);
-  const d = Number(day);
-  if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return NaN;
-
-  const now = new Date();
-  const selectedDateLabel = new Date(y, m - 1, d).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-  const todayDateLabel = now.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-  console.log(`Calculating from ${selectedDateLabel} to ${todayDateLabel}`);
-
-  const todayUtcMidnight = Date.UTC(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  );
-  const selectedUtcMidnight = Date.UTC(y, m - 1, d);
-
-  return Math.floor((todayUtcMidnight - selectedUtcMidnight) / 86400000);
-}
-
-export function resolveDayCountFromSelections() {
-  try {
-    const selections = readSelections();
-    const dateParts = readSelectionDateParts(selections);
-    if (!dateParts) return null;
-
-    const days = computeDaysSince(dateParts.year, dateParts.month, dateParts.day);
-    const why = resolveReason(selections?.reason, selections?.otherReason);
-    if (!Number.isFinite(days) || days < 0 || !why) return null;
-
-    return { days, why };
-  } catch (e) {
-    return null;
-  }
-}
-
-export function persistSelections({ reason, otherReason, month, day, year }) {
-  try {
-    const payload = {
-      reason: String(reason ?? ''),
-      otherReason: String(otherReason ?? ''),
-      selectedMonth: String(month ?? ''),
-      selectedDay: String(day ?? ''),
-      selectedYear: String(year ?? ''),
-    };
-    localStorage.setItem('daycounterSelections', JSON.stringify(payload));
-  } catch (e) {
-    // ignore storage errors
-  }
-}
-
-export function persistDayCount({ days, why }) {
-  try {
-    localStorage.setItem('daycounterDayCount', JSON.stringify({ days, why }));
-  } catch (e) {
-    // ignore storage errors
-  }
-}
-
-export function readSelections() {
-  try {
-    const raw = localStorage.getItem('daycounterSelections');
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch (e) {
-    return null;
-  }
-}
-
-export function readDayCount() {
-  try {
-    const raw = localStorage.getItem('daycounterDayCount');
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (data && typeof data === 'object' && typeof data.days === 'number' && typeof data.why === 'string') {
-      return data;
-    }
-  } catch (e) {
-    // ignore corrupt payloads
-  }
-  return null;
-}
-
 export function buildShareUrlFromSelections(selections) {
   try {
     const base = window.location.origin + window.location.pathname;
@@ -237,18 +135,10 @@ export function buildShareUrlFromSelections(selections) {
 
 export function buildShareUrlFromLocalStorage() {
   const selections = readSelections() || {};
-  let days = null;
-  try {
-    const raw = localStorage.getItem('daycounterDayCount');
-    if (raw) {
-      const data = JSON.parse(raw);
-      if (data && typeof data.days === 'number' && data.days >= 0) {
-        days = data.days;
-      }
-    }
-  } catch (e) {
-    // ignore storage errors
-  }
+  const cachedDayCount = readDayCount();
+  const days = cachedDayCount && typeof cachedDayCount.days === 'number'
+    ? cachedDayCount.days
+    : null;
   const merged = Number.isFinite(days) && days >= 0 ? { ...selections, days } : selections;
   return buildShareUrlFromSelections(merged);
 }

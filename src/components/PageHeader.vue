@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header :class="{ 'ios-header': isIos }">
     <div class="logo">
       <a href="#">
         <img src="../assets/daycounter-logo.svg" alt="Daycounter" height="34px" />
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { Capacitor } from '@capacitor/core'
+
 export default {
   name: 'PageHeader',
   props: {
@@ -61,6 +63,9 @@ export default {
   computed: {
     mobile() {
       return this.$vuetify.display.mobile;
+    },
+    isIos() {
+      return Capacitor.getPlatform() === 'ios';
     }
   },
   methods: {
@@ -122,6 +127,10 @@ header {
   padding-top: 16px;
   z-index: var(--z-header, 60);
   pointer-events: auto;
+}
+
+header.ios-header {
+  margin-top: 32px;
 }
 
 .logo {

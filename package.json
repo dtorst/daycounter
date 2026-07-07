@@ -7,11 +7,15 @@
     "build": "npm run build:web",
     "build:web": "NODE_ENV=production vue-cli-service build",
     "build:ext": "NODE_ENV=production vue-cli-service build --mode extension --dest dist-extension",
+    "ios:sync": "npm run build:web && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 npx cap sync ios",
+    "ios:open": "LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 npx cap open ios",
     "package:ext": "npm run build:ext && cd dist-extension && zip -r ../daycounter-extension.zip .",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@better-scroll/core": "^2.5.1",
+    "@capacitor/core": "^7.6.7",
+    "@capacitor/ios": "^7.6.7",
     "@mdi/font": "^7.4.47",
     "@mvpleung/flipclock": "0.0.6",
     "core-js": "^3.8.3",
@@ -24,6 +28,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@capacitor/cli": "^7.6.7",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",

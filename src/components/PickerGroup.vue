@@ -83,6 +83,14 @@
 <script>
 	import { VueScrollPicker } from 'vue-scroll-picker';
   import { track } from '../utils/analytics';
+  import { computeDaysSince, resolveReason } from '../shared/dayCount';
+  import { parseQueryParams } from '../utils/params';
+  import {
+    persistDayCount,
+    persistSelections,
+    readDayCount,
+    readSelections
+  } from '../storage/browserStorage';
 
 export default {
   name: 'PickerGroup',
@@ -166,22 +174,16 @@ export default {
       });
     },
     saveSelections() {
-      try {
-        const payload = {
-          reason: String(this.reason ?? ''),
-          otherReason: String(this.otherReason ?? ''),
-          selectedMonth: String(this.selectedMonth ?? ''),
-          selectedDay: String(this.selectedDay ?? ''),
-          selectedYear: String(this.selectedYear ?? ''),
-        };
-        localStorage.setItem('daycounterSelections', JSON.stringify(payload));
-      } catch (e) {
-        // ignore storage errors
-      }
+      persistSelections({
+        reason: this.reason,
+        otherReason: this.otherReason,
+        month: this.selectedMonth,
+        day: this.selectedDay,
+        year: this.selectedYear,
+      });
     },
     applySelectionsFromUrl() {
       try {
-        const { parseQueryParams, persistSelections } = require('../utils/params.js');
         const parsed = parseQueryParams(window.location.search);
         if (!parsed || !parsed.anySet) return false;
         if (parsed.reason) this.reason = parsed.reason;
@@ -192,10 +194,8 @@ export default {
         // If days are provided via URL, prime localStorage daycounterDayCount
         if (typeof parsed.days === 'number') {
           try {
-            const computedReason = this.reason === 'other'
-              ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other')
-              : this.reason;
-            localStorage.setItem('daycounterDayCount', JSON.stringify({ days: parsed.days, why: computedReason }));
+            const computedReason = resolveReason(this.reason, this.otherReason);
+            persistDayCount({ days: parsed.days, why: computedReason });
           } catch (e) {
             // ignore storage errors
           }
@@ -214,9 +214,7 @@ export default {
     },
     restoreSelections() {
       try {
-        const raw = localStorage.getItem('daycounterSelections');
-        if (!raw) return;
-        const data = JSON.parse(raw);
+        const data = readSelections();
         if (data && typeof data === 'object') {
           if (typeof data.reason === 'string') this.reason = (data.reason === 'other...' ? 'other' : data.reason);
           if (typeof data.otherReason === 'string') this.otherReason = data.otherReason;
@@ -229,32 +227,15 @@ export default {
       }
     },
     saveDayCount(dayCountData) {
-      try {
-        localStorage.setItem('daycounterDayCount', JSON.stringify(dayCountData));
-      } catch (e) {
-        // ignore storage errors
-      }
+      persistDayCount(dayCountData);
     },
     restoreDayCount() {
-      try {
-        const raw = localStorage.getItem('daycounterDayCount');
-        if (!raw) return null;
-        const data = JSON.parse(raw);
-        if (data && typeof data === 'object' && typeof data.days === 'number' && typeof data.why === 'string') {
-          return data;
-        }
-      } catch (e) {
-        // ignore corrupt payloads
-      }
-      return null;
+      return readDayCount();
     },
     calculateDays() {
-      const { computeDaysSince } = require('../utils/params.js');
       const days = computeDaysSince(this.selectedYear, this.selectedMonth, this.selectedDay);
       
-      const computedReason = this.reason === 'other'
-        ? (this.otherReason && this.otherReason.trim().length > 0 ? this.otherReason.trim() : 'other')
-        : this.reason;
+      const computedReason = resolveReason(this.reason, this.otherReason);
 
       // Save the dayCount data to localStorage
       this.saveDayCount({ 'days': days, 'why': computedReason });
