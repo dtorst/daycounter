@@ -145,6 +145,8 @@ struct FlipDigitCard: View {
 }
 
 struct DaycounterSunriseBackground: View {
+    private let rayRotationDuration: TimeInterval = 200
+
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
@@ -159,16 +161,26 @@ struct DaycounterSunriseBackground: View {
                     endPoint: .bottom
                 )
 
-                WidgetSceneryImage(
-                    name: "rays",
-                    designSize: CGSize(width: 2171, height: 2171),
-                    designCenter: CGPoint(x: 302, y: 260)
-                )
-                .opacity(0.55)
-                .blendMode(.screen)
+                TimelineView(.animation) { timeline in
+                    WidgetSceneryImage(
+                        name: "rays",
+                        designSize: CGSize(width: 2171, height: 2171),
+                        designCenter: CGPoint(x: 302, y: 260),
+                        rotation: rayRotationAngle(at: timeline.date)
+                    )
+                    .opacity(0.55)
+                    .blendMode(.screen)
+                }
             }
             .frame(width: size.width, height: size.height)
         }
+    }
+
+    private func rayRotationAngle(at date: Date) -> Angle {
+        let progress = date.timeIntervalSinceReferenceDate
+            .truncatingRemainder(dividingBy: rayRotationDuration) / rayRotationDuration
+
+        return .degrees(progress * 360)
     }
 }
 
@@ -231,6 +243,19 @@ struct WidgetSceneryImage: View {
     let name: String
     let designSize: CGSize
     let designCenter: CGPoint
+    let rotation: Angle
+
+    init(
+        name: String,
+        designSize: CGSize,
+        designCenter: CGPoint,
+        rotation: Angle = .zero
+    ) {
+        self.name = name
+        self.designSize = designSize
+        self.designCenter = designCenter
+        self.rotation = rotation
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -245,6 +270,7 @@ struct WidgetSceneryImage: View {
                         width: designSize.width * scaleX,
                         height: designSize.height * scaleY
                     )
+                    .rotationEffect(rotation)
                     .position(
                         x: designCenter.x * scaleX,
                         y: designCenter.y * scaleY
