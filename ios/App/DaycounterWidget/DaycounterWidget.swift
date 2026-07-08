@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 private enum DaycounterWidgetStorage {
-    static let suiteName = "group.com.davidtorstenson.daycounter"
+    static let suiteName = "group.com.mapsandlegends.daycounter"
     static let daysKey = "daycounter.days"
 
     static func readDays() -> Int {
@@ -24,7 +24,7 @@ struct DaycounterEntry: TimelineEntry {
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> DaycounterEntry {
-        DaycounterEntry(date: Date(), days: 123)
+        DaycounterEntry(date: Date(), days: DaycounterWidgetStorage.readDays())
     }
 
     func getSnapshot(in context: Context, completion: @escaping (DaycounterEntry) -> Void) {
@@ -44,8 +44,10 @@ struct DaycounterWidgetEntryView: View {
 
     var body: some View {
         content
+            .unredacted()
             .containerBackground(for: .widget) {
                 DaycounterSunriseBackground()
+                    .unredacted()
             }
     }
 
@@ -119,7 +121,7 @@ struct FlipDigitCard: View {
                     .fill(Color(red: 0.2, green: 0.2, blue: 0.2))
 
                 Text(digit)
-                    .font(.system(size: min(width * 1.55, height * 0.76), weight: .heavy, design: .rounded))
+                    .font(.custom("Montserrat-Thin", size: min(width * 1.55, height * 0.76)).weight(.semibold))
                     .monospacedDigit()
                     .foregroundStyle(Color(red: 0.92, green: 0.92, blue: 0.92))
                     .shadow(color: .black.opacity(0.55), radius: 1, x: 0, y: 1)
@@ -145,8 +147,6 @@ struct FlipDigitCard: View {
 }
 
 struct DaycounterSunriseBackground: View {
-    private let rayRotationDuration: TimeInterval = 200
-
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
@@ -161,26 +161,15 @@ struct DaycounterSunriseBackground: View {
                     endPoint: .bottom
                 )
 
-                TimelineView(.animation) { timeline in
-                    WidgetSceneryImage(
-                        name: "rays",
-                        designSize: CGSize(width: 2171, height: 2171),
-                        designCenter: CGPoint(x: 302, y: 260),
-                        rotation: rayRotationAngle(at: timeline.date)
-                    )
-                    .opacity(0.55)
-                    .blendMode(.screen)
-                }
+                Image("WidgetRays")
+                    .resizable()
+                    .widgetFullColorImage()
+                    .scaledToFill()
+                    .frame(width: size.width, height: size.height)
+                    .clipped()
             }
             .frame(width: size.width, height: size.height)
         }
-    }
-
-    private func rayRotationAngle(at date: Date) -> Angle {
-        let progress = date.timeIntervalSinceReferenceDate
-            .truncatingRemainder(dividingBy: rayRotationDuration) / rayRotationDuration
-
-        return .degrees(progress * 360)
     }
 }
 
@@ -265,6 +254,7 @@ struct WidgetSceneryImage: View {
             if let image = WidgetImageStore.image(named: name) {
                 Image(uiImage: image)
                     .resizable()
+                    .widgetFullColorImage()
                     .scaledToFit()
                     .frame(
                         width: designSize.width * scaleX,
@@ -282,24 +272,64 @@ struct WidgetSceneryImage: View {
 }
 
 private enum WidgetImageStore {
+    private static let maximumWidgetImageArea: CGFloat = 2_000_000
+
     static func image(named name: String) -> UIImage? {
         let resourceName = rawResourceName(for: name)
 
         if let path = Bundle.main.path(forResource: resourceName, ofType: "png") {
-            return UIImage(contentsOfFile: path)
+            return UIImage(contentsOfFile: path).map(resizedForWidgetArchiving)
         }
 
-        return UIImage(named: name)
+        return UIImage(named: name).map(resizedForWidgetArchiving)
     }
 
     private static func rawResourceName(for name: String) -> String {
         switch name {
-        case "rays":
-            return "rays"
         case "lake":
             return "lake@2x"
         default:
             return "\(name)@2x"
+        }
+    }
+
+    private static func resizedForWidgetArchiving(_ image: UIImage) -> UIImage {
+        let pixelSize = CGSize(
+            width: image.size.width * image.scale,
+            height: image.size.height * image.scale
+        )
+        let area = pixelSize.width * pixelSize.height
+
+        guard area > maximumWidgetImageArea else {
+            return image
+        }
+
+        let scaleFactor = sqrt(maximumWidgetImageArea / area)
+        let targetPixelSize = CGSize(
+            width: floor(pixelSize.width * scaleFactor),
+            height: floor(pixelSize.height * scaleFactor)
+        )
+        let targetPointSize = CGSize(
+            width: targetPixelSize.width / image.scale,
+            height: targetPixelSize.height / image.scale
+        )
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = image.scale
+        format.opaque = false
+
+        return UIGraphicsImageRenderer(size: targetPointSize, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetPointSize))
+        }
+    }
+}
+
+private extension Image {
+    @ViewBuilder
+    func widgetFullColorImage() -> some View {
+        if #available(iOS 18.0, *) {
+            self.widgetAccentedRenderingMode(.fullColor)
+        } else {
+            self
         }
     }
 }
@@ -315,6 +345,7 @@ struct DaycounterWidget: Widget {
         .description("Shows your current day count.")
         .supportedFamilies([.systemMedium, .accessoryRectangular])
         .contentMarginsDisabled()
+        .containerBackgroundRemovable(false)
     }
 }
 

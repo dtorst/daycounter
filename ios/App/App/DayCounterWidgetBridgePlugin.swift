@@ -10,7 +10,7 @@ public class DayCounterWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise)
     ]
 
-    private let suiteName = "group.com.davidtorstenson.daycounter"
+    private let suiteName = "group.com.mapsandlegends.daycounter"
     private let daysKey = "daycounter.days"
 
     @objc func update(_ call: CAPPluginCall) {

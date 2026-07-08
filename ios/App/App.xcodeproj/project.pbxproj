@@ -29,6 +29,7 @@
 		D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */; };
 		D6CAAF382FFC920000F1E4EF /* lake@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */; };
 		D6CAAF392FFC920000F1E4EF /* rays.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2D2FFC920000F1E4EF /* rays.png */; };
+		D6CAAF3A2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */; };
 		D6CAAF1D2FFC7DAC00F1E4EF /* DaycounterWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D6CAAF0C2FFC7DAA00F1E4EF /* DaycounterWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,7 @@
 		D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill4@2x.png"; sourceTree = "<group>"; };
 		D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/lake@2x.png"; sourceTree = "<group>"; };
 		D6CAAF2D2FFC920000F1E4EF /* rays.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Assets.xcassets/rays.png; sourceTree = "<group>"; };
+		D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6CAAF222FFC85CE00F1E4EF /* AppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppDebug.entitlements; sourceTree = "<group>"; };
 		D6CAAF232FFC862100F1E4EF /* DaycounterWidgetExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DaycounterWidgetExtensionDebug.entitlements; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */,
 				D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */,
 				D6CAAF2D2FFC920000F1E4EF /* rays.png */,
+				D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */,
 				D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */,
 			);
 			path = DaycounterWidget;
@@ -293,6 +296,7 @@
 				D6CAAF362FFC920000F1E4EF /* hill3@2x.png in Resources */,
 				D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */,
 				D6CAAF192FFC7DAC00F1E4EF /* Assets.xcassets in Resources */,
+				D6CAAF3A2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,7 +511,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
-				PRODUCT_BUNDLE_IDENTIFIER = com.davidtorstenson.daycounter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mapsandlegends.daycounter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
@@ -529,7 +533,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.davidtorstenson.daycounter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mapsandlegends.daycounter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;
@@ -564,7 +568,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.davidtorstenson.daycounter.DaycounterWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mapsandlegends.daycounter.DaycounterWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -600,7 +604,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.davidtorstenson.daycounter.DaycounterWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mapsandlegends.daycounter.DaycounterWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
