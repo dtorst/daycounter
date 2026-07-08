@@ -161,7 +161,7 @@ export default {
       }
     },
     syncNativeWidgetDayCount(days) {
-      syncNativeWidgetDayCount(days)
+      syncNativeWidgetDayCount(days, readDayCounterState())
     },
     onVisibilityChange() {
       if (document.visibilityState === 'visible') {
