@@ -15,22 +15,22 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
-		D6CAAF242FFC900000F1E4EF /* DayCounterWidgetBridgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF252FFC900000F1E4EF /* DayCounterWidgetBridgePlugin.swift */; };
-		D6CAAF262FFC910000F1E4EF /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF272FFC910000F1E4EF /* MainViewController.swift */; };
 		D6CAAF0E2FFC7DAA00F1E4EF /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6CAAF0D2FFC7DAA00F1E4EF /* WidgetKit.framework */; };
 		D6CAAF102FFC7DAA00F1E4EF /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6CAAF0F2FFC7DAA00F1E4EF /* SwiftUI.framework */; };
 		D6CAAF132FFC7DAA00F1E4EF /* DaycounterWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF122FFC7DAA00F1E4EF /* DaycounterWidgetBundle.swift */; };
 		D6CAAF152FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF142FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift */; };
 		D6CAAF172FFC7DAA00F1E4EF /* DaycounterWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF162FFC7DAA00F1E4EF /* DaycounterWidget.swift */; };
 		D6CAAF192FFC7DAC00F1E4EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF182FFC7DAC00F1E4EF /* Assets.xcassets */; };
-		D6CAAF342FFC920000F1E4EF /* hill1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF282FFC920000F1E4EF /* hill1@2x.png */; };
-		D6CAAF352FFC920000F1E4EF /* hill2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF292FFC920000F1E4EF /* hill2@2x.png */; };
-		D6CAAF362FFC920000F1E4EF /* hill3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2A2FFC920000F1E4EF /* hill3@2x.png */; };
-		D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */; };
-		D6CAAF382FFC920000F1E4EF /* lake@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */; };
-		D6CAAF392FFC920000F1E4EF /* rays.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2D2FFC920000F1E4EF /* rays.png */; };
-		D6CAAF3A2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */; };
 		D6CAAF1D2FFC7DAC00F1E4EF /* DaycounterWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D6CAAF0C2FFC7DAA00F1E4EF /* DaycounterWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D6CAAF242FFC900000F1E4EF /* DayCounterWidgetBridgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF252FFC900000F1E4EF /* DayCounterWidgetBridgePlugin.swift */; };
+		D6CAAF262FFC910000F1E4EF /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CAAF272FFC910000F1E4EF /* MainViewController.swift */; };
+		D6CAAF342FFC920000F1E4EF /* Assets.xcassets/hill1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF282FFC920000F1E4EF /* Assets.xcassets/hill1@2x.png */; };
+		D6CAAF352FFC920000F1E4EF /* Assets.xcassets/hill2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF292FFC920000F1E4EF /* Assets.xcassets/hill2@2x.png */; };
+		D6CAAF362FFC920000F1E4EF /* Assets.xcassets/hill3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2A2FFC920000F1E4EF /* Assets.xcassets/hill3@2x.png */; };
+		D6CAAF372FFC920000F1E4EF /* Assets.xcassets/hill4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2B2FFC920000F1E4EF /* Assets.xcassets/hill4@2x.png */; };
+		D6CAAF382FFC920000F1E4EF /* Assets.xcassets/lake@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2C2FFC920000F1E4EF /* Assets.xcassets/lake@2x.png */; };
+		D6CAAF392FFC920000F1E4EF /* Assets.xcassets/rays.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2D2FFC920000F1E4EF /* Assets.xcassets/rays.png */; };
+		D6CAAF3A2FFC930000F1E4EF /* ../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF3B2FFC930000F1E4EF /* ../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +60,7 @@
 /* Begin PBXFileReference section */
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
-		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		504EC3041FED79650016851F /* Daycounter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daycounter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -69,8 +69,6 @@
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
-		D6CAAF252FFC900000F1E4EF /* DayCounterWidgetBridgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCounterWidgetBridgePlugin.swift; sourceTree = "<group>"; };
-		D6CAAF272FFC910000F1E4EF /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		D6CAAF0C2FFC7DAA00F1E4EF /* DaycounterWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DaycounterWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6CAAF0D2FFC7DAA00F1E4EF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D6CAAF0F2FFC7DAA00F1E4EF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -78,16 +76,18 @@
 		D6CAAF142FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaycounterWidgetLiveActivity.swift; sourceTree = "<group>"; };
 		D6CAAF162FFC7DAA00F1E4EF /* DaycounterWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaycounterWidget.swift; sourceTree = "<group>"; };
 		D6CAAF182FFC7DAC00F1E4EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D6CAAF282FFC920000F1E4EF /* hill1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill1@2x.png"; sourceTree = "<group>"; };
-		D6CAAF292FFC920000F1E4EF /* hill2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill2@2x.png"; sourceTree = "<group>"; };
-		D6CAAF2A2FFC920000F1E4EF /* hill3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill3@2x.png"; sourceTree = "<group>"; };
-		D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill4@2x.png"; sourceTree = "<group>"; };
-		D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/lake@2x.png"; sourceTree = "<group>"; };
-		D6CAAF2D2FFC920000F1E4EF /* rays.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Assets.xcassets/rays.png; sourceTree = "<group>"; };
-		D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6CAAF222FFC85CE00F1E4EF /* AppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppDebug.entitlements; sourceTree = "<group>"; };
 		D6CAAF232FFC862100F1E4EF /* DaycounterWidgetExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DaycounterWidgetExtensionDebug.entitlements; sourceTree = "<group>"; };
+		D6CAAF252FFC900000F1E4EF /* DayCounterWidgetBridgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCounterWidgetBridgePlugin.swift; sourceTree = "<group>"; };
+		D6CAAF272FFC910000F1E4EF /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		D6CAAF282FFC920000F1E4EF /* Assets.xcassets/hill1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill1@2x.png"; sourceTree = "<group>"; };
+		D6CAAF292FFC920000F1E4EF /* Assets.xcassets/hill2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill2@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2A2FFC920000F1E4EF /* Assets.xcassets/hill3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill3@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2B2FFC920000F1E4EF /* Assets.xcassets/hill4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/hill4@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2C2FFC920000F1E4EF /* Assets.xcassets/lake@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/lake@2x.png"; sourceTree = "<group>"; };
+		D6CAAF2D2FFC920000F1E4EF /* Assets.xcassets/rays.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Assets.xcassets/rays.png; sourceTree = "<group>"; };
+		D6CAAF3B2FFC930000F1E4EF /* ../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -137,7 +137,7 @@
 		504EC3051FED79650016851F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				504EC3041FED79650016851F /* App.app */,
+				504EC3041FED79650016851F /* Daycounter.app */,
 				D6CAAF0C2FFC7DAA00F1E4EF /* DaycounterWidgetExtension.appex */,
 			);
 			name = Products;
@@ -177,13 +177,13 @@
 				D6CAAF142FFC7DAA00F1E4EF /* DaycounterWidgetLiveActivity.swift */,
 				D6CAAF162FFC7DAA00F1E4EF /* DaycounterWidget.swift */,
 				D6CAAF182FFC7DAC00F1E4EF /* Assets.xcassets */,
-				D6CAAF282FFC920000F1E4EF /* hill1@2x.png */,
-				D6CAAF292FFC920000F1E4EF /* hill2@2x.png */,
-				D6CAAF2A2FFC920000F1E4EF /* hill3@2x.png */,
-				D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */,
-				D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */,
-				D6CAAF2D2FFC920000F1E4EF /* rays.png */,
-				D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */,
+				D6CAAF282FFC920000F1E4EF /* Assets.xcassets/hill1@2x.png */,
+				D6CAAF292FFC920000F1E4EF /* Assets.xcassets/hill2@2x.png */,
+				D6CAAF2A2FFC920000F1E4EF /* Assets.xcassets/hill3@2x.png */,
+				D6CAAF2B2FFC920000F1E4EF /* Assets.xcassets/hill4@2x.png */,
+				D6CAAF2C2FFC920000F1E4EF /* Assets.xcassets/lake@2x.png */,
+				D6CAAF2D2FFC920000F1E4EF /* Assets.xcassets/rays.png */,
+				D6CAAF3B2FFC930000F1E4EF /* ../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf */,
 				D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */,
 			);
 			path = DaycounterWidget;
@@ -192,9 +192,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		504EC3031FED79650016851F /* App */ = {
+		504EC3031FED79650016851F /* Daycounter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
+			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "Daycounter" */;
 			buildPhases = (
 				6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */,
 				504EC3001FED79650016851F /* Sources */,
@@ -208,9 +208,9 @@
 			dependencies = (
 				D6CAAF1C2FFC7DAC00F1E4EF /* PBXTargetDependency */,
 			);
-			name = App;
+			name = Daycounter;
 			productName = App;
-			productReference = 504EC3041FED79650016851F /* App.app */;
+			productReference = 504EC3041FED79650016851F /* Daycounter.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D6CAAF0B2FFC7DAA00F1E4EF /* DaycounterWidgetExtension */ = {
@@ -250,7 +250,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 504EC2FF1FED79650016851F /* Build configuration list for PBXProject "App" */;
+			buildConfigurationList = 504EC2FF1FED79650016851F /* Build configuration list for PBXProject "Daycounter" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -265,7 +265,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				504EC3031FED79650016851F /* App */,
+				504EC3031FED79650016851F /* Daycounter */,
 				D6CAAF0B2FFC7DAA00F1E4EF /* DaycounterWidgetExtension */,
 			);
 		};
@@ -289,14 +289,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D6CAAF392FFC920000F1E4EF /* rays.png in Resources */,
-				D6CAAF382FFC920000F1E4EF /* lake@2x.png in Resources */,
-				D6CAAF342FFC920000F1E4EF /* hill1@2x.png in Resources */,
-				D6CAAF352FFC920000F1E4EF /* hill2@2x.png in Resources */,
-				D6CAAF362FFC920000F1E4EF /* hill3@2x.png in Resources */,
-				D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */,
+				D6CAAF392FFC920000F1E4EF /* Assets.xcassets/rays.png in Resources */,
+				D6CAAF382FFC920000F1E4EF /* Assets.xcassets/lake@2x.png in Resources */,
+				D6CAAF342FFC920000F1E4EF /* Assets.xcassets/hill1@2x.png in Resources */,
+				D6CAAF352FFC920000F1E4EF /* Assets.xcassets/hill2@2x.png in Resources */,
+				D6CAAF362FFC920000F1E4EF /* Assets.xcassets/hill3@2x.png in Resources */,
+				D6CAAF372FFC920000F1E4EF /* Assets.xcassets/hill4@2x.png in Resources */,
 				D6CAAF192FFC7DAC00F1E4EF /* Assets.xcassets in Resources */,
-				D6CAAF3A2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf in Resources */,
+				D6CAAF3A2FFC930000F1E4EF /* ../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -504,7 +504,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/AppDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = T63S4BL2AJ;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -527,7 +527,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/AppDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = T63S4BL2AJ;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -616,7 +616,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		504EC2FF1FED79650016851F /* Build configuration list for PBXProject "App" */ = {
+		504EC2FF1FED79650016851F /* Build configuration list for PBXProject "Daycounter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				504EC3141FED79650016851F /* Debug */,
@@ -625,7 +625,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */ = {
+		504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "Daycounter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
