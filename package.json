@@ -15,6 +15,7 @@
   "dependencies": {
     "@better-scroll/core": "^2.5.1",
     "@capacitor/core": "^7.6.7",
+    "@capacitor/haptics": "^7.0.5",
     "@capacitor/ios": "^7.6.7",
     "@mdi/font": "^7.4.47",
     "@mvpleung/flipclock": "0.0.6",

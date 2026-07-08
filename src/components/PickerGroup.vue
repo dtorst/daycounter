@@ -1,20 +1,20 @@
 <template>
 	<div v-if="!mobile" class="picker-group">
 		<div class="reason-column" :class="{ 'other-active': reason === 'other' }">
-			<VueScrollPicker :options="reasons" v-model="reason" />
+			<VueScrollPicker :options="reasons" v-model="reason" @start="startPickerMoveHaptics('reason', reason)" @move="triggerPickerMoveHaptic('reason', $event)" @end="resetPickerMoveHaptics('reason')" @cancel="resetPickerMoveHaptics('reason')" @click="triggerPickerMoveHaptic('reason', $event)" />
 			<VTextField v-if="reason === 'other'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other" />
 		</div>
     <div class="since-column">
       <span class="since">since</span>
     </div>
     <div class="month-column">
-      <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column" />
+      <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column" @start="startPickerMoveHaptics('month', selectedMonth)" @move="triggerPickerMoveHaptic('month', $event)" @end="resetPickerMoveHaptics('month')" @cancel="resetPickerMoveHaptics('month')" @wheel="triggerPickerMoveHaptic('month', $event)" @click="triggerPickerMoveHaptic('month', $event)" />
     </div>
     <div class="day-column">
-      <VueScrollPicker :options="days" v-model="selectedDay" class="day-column" />
+      <VueScrollPicker :options="days" v-model="selectedDay" class="day-column" @start="startPickerMoveHaptics('day', selectedDay)" @move="triggerPickerMoveHaptic('day', $event)" @end="resetPickerMoveHaptics('day')" @cancel="resetPickerMoveHaptics('day')" @wheel="triggerPickerMoveHaptic('day', $event)" @click="triggerPickerMoveHaptic('day', $event)" />
     </div>
     <div class="year-column">
-      <VueScrollPicker :options="years" v-model="selectedYear" class="year-column" />
+      <VueScrollPicker :options="years" v-model="selectedYear" class="year-column" @start="startPickerMoveHaptics('year', selectedYear)" @move="triggerPickerMoveHaptic('year', $event)" @end="resetPickerMoveHaptics('year')" @cancel="resetPickerMoveHaptics('year')" @wheel="triggerPickerMoveHaptic('year', $event)" @click="triggerPickerMoveHaptic('year', $event)" />
     </div>
     <div class="btn-container">
       <button class="calculate-days" @click="calculateDays"><VIcon size="20" style="line-height:30px;">mdi-white-balance-sunny</VIcon></button>
@@ -57,23 +57,23 @@
       </template>
       <v-carousel-item>
         <div :class="{ 'other-active': reason === 'other' }">
-          <VueScrollPicker :options="reasons" v-model="reason" class="mobile-picker mobile-reasons-picker" />
+          <VueScrollPicker :options="reasons" v-model="reason" class="mobile-picker mobile-reasons-picker" @start="startPickerMoveHaptics('reason', reason)" @move="triggerPickerMoveHaptic('reason', $event)" @end="resetPickerMoveHaptics('reason')" @cancel="resetPickerMoveHaptics('reason')" @click="triggerPickerMoveHaptic('reason', $event)" />
           <VTextField v-if="reason === 'other'" ref="otherInput" v-model="otherReason" class="other-reason-input" variant="plain" :hide-details="true" :clearable="false" density="comfortable" :autofocus="true" placeholder="other" />
         </div>
       </v-carousel-item>
       <v-carousel-item>
         <div>
-          <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column mobile-picker" />
+          <VueScrollPicker :options="months" v-model="selectedMonth" class="month-column mobile-picker" @start="startPickerMoveHaptics('month', selectedMonth)" @move="triggerPickerMoveHaptic('month', $event)" @end="resetPickerMoveHaptics('month')" @cancel="resetPickerMoveHaptics('month')" @wheel="triggerPickerMoveHaptic('month', $event)" @click="triggerPickerMoveHaptic('month', $event)" />
         </div>
       </v-carousel-item>
       <v-carousel-item>
         <div>
-          <VueScrollPicker :options="days" v-model="selectedDay" class="day-column mobile-picker" />
+          <VueScrollPicker :options="days" v-model="selectedDay" class="day-column mobile-picker" @start="startPickerMoveHaptics('day', selectedDay)" @move="triggerPickerMoveHaptic('day', $event)" @end="resetPickerMoveHaptics('day')" @cancel="resetPickerMoveHaptics('day')" @wheel="triggerPickerMoveHaptic('day', $event)" @click="triggerPickerMoveHaptic('day', $event)" />
         </div>
       </v-carousel-item>
       <v-carousel-item>
         <div>
-          <VueScrollPicker :options="years" v-model="selectedYear" class="year-column mobile-picker" />
+          <VueScrollPicker :options="years" v-model="selectedYear" class="year-column mobile-picker" @start="startPickerMoveHaptics('year', selectedYear)" @move="triggerPickerMoveHaptic('year', $event)" @end="resetPickerMoveHaptics('year')" @cancel="resetPickerMoveHaptics('year')" @wheel="triggerPickerMoveHaptic('year', $event)" @click="triggerPickerMoveHaptic('year', $event)" />
         </div>
       </v-carousel-item>
       <v-carousel-item></v-carousel-item>
@@ -81,6 +81,8 @@
   </div>
 </template>
 <script>
+  import { Capacitor } from '@capacitor/core';
+  import { Haptics, ImpactStyle } from '@capacitor/haptics';
 	import { VueScrollPicker } from 'vue-scroll-picker';
   import { track } from '../utils/analytics';
   import { computeDaysSince, resolveReason } from '../shared/dayCount';
@@ -105,6 +107,8 @@ export default {
       reason: "alive",
       otherReason: "",
       currentIndex: 0,
+      hapticsReady: false,
+      pickerMoveValues: {},
     }
   },
   mounted() {
@@ -115,11 +119,20 @@ export default {
     if (this.reason === 'other') {
       this.focusOtherInput();
     }
+    this.$nextTick(() => {
+      this.hapticsReady = true;
+    });
   },
   watch: {
-    selectedYear() { this.saveSelections(); },
-    selectedMonth() { this.saveSelections(); },
-    selectedDay() { this.saveSelections(); },
+    selectedYear() {
+      this.saveSelections();
+    },
+    selectedMonth() {
+      this.saveSelections();
+    },
+    selectedDay() {
+      this.saveSelections();
+    },
     reason(newVal) {
       this.saveSelections();
       track('reason_selected', { reason: newVal });
@@ -161,6 +174,28 @@ export default {
     },
   },
   methods: {
+    canUseNativeHaptics() {
+      return this.hapticsReady && Capacitor.isNativePlatform();
+    },
+    startPickerMoveHaptics(pickerKey, currentValue) {
+      this.pickerMoveValues[pickerKey] = currentValue;
+    },
+    resetPickerMoveHaptics(pickerKey) {
+      delete this.pickerMoveValues[pickerKey];
+    },
+    triggerPickerMoveHaptic(pickerKey, value) {
+      if (this.pickerMoveValues[pickerKey] === value) return;
+
+      this.pickerMoveValues[pickerKey] = value;
+      this.triggerPickerHaptic();
+    },
+    triggerPickerHaptic() {
+      if (!this.canUseNativeHaptics()) return;
+
+      Haptics.impact({ style: ImpactStyle.Light }).catch(() => {
+        // Haptics can be unavailable in simulators or unsupported native contexts.
+      });
+    },
     focusOtherInput() {
       this.$nextTick(() => {
         const ref = this.$refs.otherInput;
@@ -233,6 +268,7 @@ export default {
       return readDayCount();
     },
     calculateDays() {
+      this.triggerPickerHaptic();
       const days = computeDaysSince(this.selectedYear, this.selectedMonth, this.selectedDay);
       
       const computedReason = resolveReason(this.reason, this.otherReason);
