@@ -6,8 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "npm run build:web",
     "build:web": "NODE_ENV=production vue-cli-service build",
+    "build:ios": "NODE_ENV=production VUE_APP_BUILD_TARGET=ios vue-cli-service build",
     "build:ext": "NODE_ENV=production vue-cli-service build --mode extension --dest dist-extension",
-    "ios:sync": "npm run build:web && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 npx cap sync ios",
+    "ios:sync": "npm run build:ios && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 npx cap sync ios",
     "ios:open": "LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 npx cap open ios",
     "package:ext": "npm run build:ext && cd dist-extension && zip -r ../daycounter-extension.zip .",
     "lint": "vue-cli-service lint"

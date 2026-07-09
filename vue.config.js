@@ -2,10 +2,12 @@ const { defineConfig } = require('@vue/cli-service')
 const path = require('path')
 
 const isExtensionBuild = process.env.VUE_APP_BUILD_TARGET === 'extension'
+const isIosBuild = process.env.VUE_APP_BUILD_TARGET === 'ios'
+const useRelativePublicPath = isExtensionBuild || isIosBuild
 
 module.exports = defineConfig({
   transpileDependencies: true,
-  publicPath: isExtensionBuild ? './' : '/',
+  publicPath: useRelativePublicPath ? './' : '/',
   productionSourceMap: !isExtensionBuild,
   configureWebpack: isExtensionBuild
     ? {

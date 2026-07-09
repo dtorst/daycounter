@@ -31,6 +31,7 @@
 		D6CAAF382FFC920000F1E4EF /* lake@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */; };
 		D6CAAF392FFC920000F1E4EF /* rays.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF2D2FFC920000F1E4EF /* rays.png */; };
 		D6CAAF3A2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */; };
+		D6CAAF3D2FFC940000F1E4EF /* moon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6CAAF3C2FFC940000F1E4EF /* moon@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/lake@2x.png"; sourceTree = "<group>"; };
 		D6CAAF2D2FFC920000F1E4EF /* rays.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Assets.xcassets/rays.png; sourceTree = "<group>"; };
 		D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "../../../src/assets/fonts/Montserrat-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		D6CAAF3C2FFC940000F1E4EF /* moon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Assets.xcassets/moon@2x.png"; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -187,6 +189,7 @@
 				D6CAAF2B2FFC920000F1E4EF /* hill4@2x.png */,
 				D6CAAF2C2FFC920000F1E4EF /* lake@2x.png */,
 				D6CAAF2D2FFC920000F1E4EF /* rays.png */,
+				D6CAAF3C2FFC940000F1E4EF /* moon@2x.png */,
 				D6CAAF3B2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf */,
 				D6CAAF1A2FFC7DAC00F1E4EF /* Info.plist */,
 			);
@@ -297,6 +300,7 @@
 				D6CAAF352FFC920000F1E4EF /* hill2@2x.png in Resources */,
 				D6CAAF362FFC920000F1E4EF /* hill3@2x.png in Resources */,
 				D6CAAF372FFC920000F1E4EF /* hill4@2x.png in Resources */,
+				D6CAAF3D2FFC940000F1E4EF /* moon@2x.png in Resources */,
 				D6CAAF192FFC7DAC00F1E4EF /* Assets.xcassets in Resources */,
 				D6CAAF3A2FFC930000F1E4EF /* Montserrat-VariableFont_wght.ttf in Resources */,
 			);

@@ -14,7 +14,7 @@ private enum DaycounterWidgetStorage {
     static let selectedMonthKey = "daycounter.selectedDate.month"
     static let selectedDayKey = "daycounter.selectedDate.day"
 
-    private static let timelineEntryCount = 31
+    private static let timelineDayCount = 31
 
     static func readDays(on date: Date = Date()) -> Int {
         if
@@ -31,24 +31,29 @@ private enum DaycounterWidgetStorage {
         var calendar = Calendar.autoupdatingCurrent
         calendar.timeZone = .autoupdatingCurrent
 
-        var dates = [date]
+        var dates: Set<Date> = [date]
         let startOfToday = calendar.startOfDay(for: date)
 
-        guard var nextMidnight = calendar.date(byAdding: .day, value: 1, to: startOfToday) else {
-            return dates
-        }
-
-        for _ in 1..<timelineEntryCount {
-            dates.append(nextMidnight)
-
-            guard let followingMidnight = calendar.date(byAdding: .day, value: 1, to: nextMidnight) else {
-                break
+        for dayOffset in 0...timelineDayCount {
+            guard let dayStart = calendar.date(byAdding: .day, value: dayOffset, to: startOfToday) else {
+                continue
             }
 
-            nextMidnight = followingMidnight
+            if dayOffset > 0 {
+                dates.insert(dayStart)
+            }
+
+            [7, 19].forEach { hour in
+                if
+                    let transitionDate = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: dayStart),
+                    transitionDate > date
+                {
+                    dates.insert(transitionDate)
+                }
+            }
         }
 
-        return dates
+        return dates.sorted()
     }
 
     private static func readCachedDays() -> Int {
@@ -126,6 +131,36 @@ struct DaycounterEntry: TimelineEntry {
     let days: Int
 }
 
+enum DaycounterScenePhase {
+    case day
+    case night
+
+    static func phase(for date: Date) -> DaycounterScenePhase {
+        var calendar = Calendar.autoupdatingCurrent
+        calendar.timeZone = .autoupdatingCurrent
+
+        let hour = calendar.component(.hour, from: date)
+        return hour >= 19 || hour < 7 ? .night : .day
+    }
+
+    var skyColors: [Color] {
+        switch self {
+        case .day:
+            return [.daycounterSkyTop, .daycounterSkyBottom]
+        case .night:
+            return [.daycounterNightSkyTop, .daycounterNightSkyBottom]
+        }
+    }
+
+    func sceneryTint(for name: String) -> Color? {
+        guard self == .night else {
+            return nil
+        }
+
+        return name == "lake" ? .daycounterNightLake : .daycounterNightHill
+    }
+}
+
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> DaycounterEntry {
         let date = Date()
@@ -154,6 +189,8 @@ struct DaycounterWidgetEntryView: View {
 
     @ViewBuilder
     var body: some View {
+        let scenePhase = DaycounterScenePhase.phase(for: entry.date)
+
         switch family {
         case .accessoryRectangular:
             content
@@ -162,10 +199,10 @@ struct DaycounterWidgetEntryView: View {
                     EmptyView()
                 }
         default:
-            content
+            content(scenePhase: scenePhase)
                 .unredacted()
                 .containerBackground(for: .widget) {
-                    DaycounterSunriseBackground()
+                    DaycounterWidgetBackground(scenePhase: scenePhase)
                         .unredacted()
                 }
         }
@@ -177,20 +214,31 @@ struct DaycounterWidgetEntryView: View {
         case .accessoryRectangular:
             AccessoryDayCountView(days: entry.days)
         default:
-            MediumDayCountView(days: entry.days)
+            MediumDayCountView(days: entry.days, scenePhase: DaycounterScenePhase.phase(for: entry.date))
+        }
+    }
+
+    @ViewBuilder
+    private func content(scenePhase: DaycounterScenePhase) -> some View {
+        switch family {
+        case .accessoryRectangular:
+            AccessoryDayCountView(days: entry.days)
+        default:
+            MediumDayCountView(days: entry.days, scenePhase: scenePhase)
         }
     }
 }
 
 struct MediumDayCountView: View {
     let days: Int
+    let scenePhase: DaycounterScenePhase
 
     var body: some View {
         GeometryReader { proxy in
             let counterWidth = proxy.size.width * 0.84
 
             ZStack {
-                DaycounterSunriseForeground()
+                DaycounterWidgetForeground(scenePhase: scenePhase)
 
                 FlipDayCountView(days: days, maximumWidth: counterWidth)
                     .padding(.horizontal, 18)
@@ -344,73 +392,92 @@ struct FlipDigitCard: View {
     }
 }
 
-struct DaycounterSunriseBackground: View {
+struct DaycounterWidgetBackground: View {
+    let scenePhase: DaycounterScenePhase
+
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
 
             ZStack {
                 LinearGradient(
-                    colors: [
-                        Color.daycounterSkyTop,
-                        Color.daycounterSkyBottom
-                    ],
+                    colors: scenePhase.skyColors,
                     startPoint: .top,
                     endPoint: .bottom
                 )
 
-                Image("WidgetRays")
-                    .resizable()
-                    .widgetFullColorImage()
-                    .scaledToFill()
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
+                if scenePhase == .day {
+                    Image("WidgetRays")
+                        .resizable()
+                        .widgetFullColorImage()
+                        .scaledToFill()
+                        .frame(width: size.width, height: size.height)
+                        .clipped()
+                }
             }
             .frame(width: size.width, height: size.height)
         }
     }
 }
 
-struct DaycounterSunriseForeground: View {
+struct DaycounterWidgetForeground: View {
+    let scenePhase: DaycounterScenePhase
+
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
             let sunSize = min(size.width * 0.215, size.height * 0.46)
 
             ZStack {
-                Circle()
-                    .fill(Color.daycounterSun)
-                    .frame(width: sunSize, height: sunSize)
-                    .position(x: size.width * 0.5, y: size.height * 0.93)
+                switch scenePhase {
+                case .day:
+                    Circle()
+                        .fill(Color.daycounterSun)
+                        .frame(width: sunSize, height: sunSize)
+                        .position(x: size.width * 0.5, y: size.height * 0.93)
+                case .night:
+                    WidgetStarField()
+
+                    WidgetSceneryImage(
+                        name: "moon",
+                        designSize: CGSize(width: 69.4, height: 69.4),
+                        designCenter: CGPoint(x: 455.7, y: 55.7)
+                    )
+                }
 
                 WidgetSceneryImage(
                     name: "lake",
                     designSize: CGSize(width: 257, height: 21),
-                    designCenter: CGPoint(x: 301.5, y: 271.5)
+                    designCenter: CGPoint(x: 301.5, y: 271.5),
+                    tint: scenePhase.sceneryTint(for: "lake")
                 )
 
                 WidgetSceneryImage(
                     name: "hill1",
                     designSize: CGSize(width: 208.5, height: 92.5),
-                    designCenter: CGPoint(x: 103, y: 236)
+                    designCenter: CGPoint(x: 103, y: 236),
+                    tint: scenePhase.sceneryTint(for: "hill1")
                 )
 
                 WidgetSceneryImage(
                     name: "hill2",
                     designSize: CGSize(width: 289, height: 59),
-                    designCenter: CGPoint(x: 155, y: 252.5)
+                    designCenter: CGPoint(x: 155, y: 252.5),
+                    tint: scenePhase.sceneryTint(for: "hill2")
                 )
 
                 WidgetSceneryImage(
                     name: "hill3",
                     designSize: CGSize(width: 300.5, height: 58),
-                    designCenter: CGPoint(x: 455, y: 253)
+                    designCenter: CGPoint(x: 455, y: 253),
+                    tint: scenePhase.sceneryTint(for: "hill3")
                 )
 
                 WidgetSceneryImage(
                     name: "hill4",
                     designSize: CGSize(width: 166.5, height: 112),
-                    designCenter: CGPoint(x: 520, y: 226)
+                    designCenter: CGPoint(x: 520, y: 226),
+                    tint: scenePhase.sceneryTint(for: "hill4")
                 )
             }
             .allowsHitTesting(false)
@@ -421,9 +488,45 @@ struct DaycounterSunriseForeground: View {
 private extension Color {
     static let daycounterSkyTop = Color(red: 0.75, green: 0.27, blue: 0.02)
     static let daycounterSkyBottom = Color(red: 0.96, green: 0.78, blue: 0.05)
+    static let daycounterNightSkyTop = Color(red: 0.07, green: 0.10, blue: 0.21)
+    static let daycounterNightSkyBottom = Color(red: 0.16, green: 0.35, blue: 0.48)
     static let daycounterSun = Color(red: 0.95, green: 0.94, blue: 0.53)
+    static let daycounterNightHill = Color(red: 0.11, green: 0.11, blue: 0.11)
+    static let daycounterNightLake = Color(red: 0.47, green: 0.58, blue: 0.64)
     static let daycounterLockDivider = Color(red: 0.4, green: 0.4, blue: 0.4)
     static let daycounterLockCard = Color(red: 0.6, green: 0.6, blue: 0.6)
+}
+
+private struct WidgetStarField: View {
+    private static let designCanvasSize = CGSize(width: 603, height: 282)
+    private static let starPositions = [
+        CGPoint(x: 300.0, y: 32.7),
+        CGPoint(x: 132.5, y: 20.8),
+        CGPoint(x: 56.8, y: 47.5),
+        CGPoint(x: 94.7, y: 59.4),
+        CGPoint(x: 390.3, y: 51.9),
+        CGPoint(x: 356.8, y: 29.7),
+        CGPoint(x: 439.9, y: 8.9),
+        CGPoint(x: 546.2, y: 29.7),
+        CGPoint(x: 498.1, y: 51.9)
+    ]
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scaleX = proxy.size.width / Self.designCanvasSize.width
+            let scaleY = proxy.size.height / Self.designCanvasSize.height
+            let starSize = max(1.4, min(scaleX, scaleY) * 2.4)
+
+            ForEach(Array(Self.starPositions.enumerated()), id: \.offset) { _, position in
+                Circle()
+                    .fill(Color.white.opacity(0.95))
+                    .frame(width: starSize, height: starSize)
+                    .shadow(color: .white.opacity(0.9), radius: max(2, starSize * 2.2))
+                    .position(x: position.x * scaleX, y: position.y * scaleY)
+            }
+        }
+        .allowsHitTesting(false)
+    }
 }
 
 struct WidgetSceneryImage: View {
@@ -433,17 +536,20 @@ struct WidgetSceneryImage: View {
     let designSize: CGSize
     let designCenter: CGPoint
     let rotation: Angle
+    let tint: Color?
 
     init(
         name: String,
         designSize: CGSize,
         designCenter: CGPoint,
-        rotation: Angle = .zero
+        rotation: Angle = .zero,
+        tint: Color? = nil
     ) {
         self.name = name
         self.designSize = designSize
         self.designCenter = designCenter
         self.rotation = rotation
+        self.tint = tint
     }
 
     var body: some View {
@@ -453,9 +559,11 @@ struct WidgetSceneryImage: View {
 
             if let image = WidgetImageStore.image(named: name) {
                 Image(uiImage: image)
+                    .renderingMode(tint == nil ? .original : .template)
                     .resizable()
                     .widgetFullColorImage()
                     .scaledToFit()
+                    .foregroundStyle(tint ?? Color.clear)
                     .frame(
                         width: designSize.width * scaleX,
                         height: designSize.height * scaleY
@@ -552,7 +660,14 @@ struct DaycounterWidget: Widget {
 #Preview(as: .systemMedium) {
     DaycounterWidget()
 } timeline: {
-    DaycounterEntry(date: .now, days: 123)
+    DaycounterEntry(
+        date: Calendar.current.date(from: DateComponents(year: 2026, month: 7, day: 9, hour: 12)) ?? .now,
+        days: 123
+    )
+    DaycounterEntry(
+        date: Calendar.current.date(from: DateComponents(year: 2026, month: 7, day: 9, hour: 21)) ?? .now,
+        days: 123
+    )
 }
 
 #Preview(as: .accessoryRectangular) {
