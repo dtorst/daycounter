@@ -12,14 +12,29 @@
             :reason="reason"
             :today="today"
             :currentComponent="currentComponent"
-            @dayCount="updateDays"
+            :showPicker="isPickerVisible"
+            :pickerDayCount="pickerDayCount"
+            :pickerKey="pickerKey"
+            :useStoredPickerSelections="useStoredPickerSelections"
+            :showCancelRemove="showCancelRemove"
+            :canNavigatePrevious="canNavigatePrevious"
+            :canNavigateNext="canNavigateNext"
+            @dayCount="saveDayCount"
+            @cancelDayCount="handlePickerCancel"
+            @navigateDayCount="navigateDayCount"
           />
         </div>
         <div class="overlay-layer">
           <PageHeader
-            :buttonDisplay="daysSince"
+            :buttonDisplay="buttonDisplay"
             :showInfoMenu="!isExtensionBuild"
-            @buttonClicked="daysSince = null"
+            :showAddButton="buttonDisplay"
+            :dayCountCount="dayCounts.length"
+            :currentDayCountIndex="currentDayCountIndex"
+            :showDayCountDots="dayCounts.length > 1 && !isPickerVisible"
+            @buttonClicked="startEditDayCount"
+            @addDayCounter="startAddDayCount"
+            @selectDayCount="selectDayCount"
             @openDrawer="openDrawer"
           />
         </div>
@@ -37,17 +52,22 @@ import PageHeader from './components/PageHeader'
 import DrawerComponent from '@/components/Drawer'
 import InteractableLayer from './components/InteractableLayer'
 import {
-  computeDaysSince,
   formatLongDate,
-  parseQueryParams,
-  persistDayCount,
-  persistSelections,
-  readDayCount,
-  resolveDayCountFromSelections,
-  resolveReason
+  parseQueryParams
 } from './utils/params.js'
-import { isAnniversaryToday } from './shared/dayCount'
-import { readDayCounterState } from './storage/browserStorage'
+import {
+  computeDaysSince,
+  createDayCountEntry,
+  isAnniversaryToday,
+  resolveDayCountEntry,
+  resolveReason
+} from './shared/dayCount'
+import {
+  persistDayCount,
+  persistDayCounterState,
+  readDayCount,
+  readDayCounterState
+} from './storage/browserStorage'
 import { syncWidgetDayCount as syncNativeWidgetDayCount } from './native/dayCounterWidgetBridge'
 
 const RESUME_SYNC_DELAY_MS = 120
@@ -72,20 +92,71 @@ export default {
   },
   data() {
     return {
-      daysSince: null,
+      dayCounts: [],
+      currentDayCountIndex: 0,
+      legacyDayCount: null,
+      mode: 'create',
       todaysDay: false,
-      currentComponent: null,
-      reason: null,
+      currentComponent: 'PickerGroup',
       today: formatLongDate(),
       drawer: false,
       isExtensionBuild: IS_EXTENSION_BUILD,
       resumeSyncTimer: null
     }
   },
+  computed: {
+    currentDayCount() {
+      return this.dayCounts[this.currentDayCountIndex] || this.dayCounts[0] || null
+    },
+    resolvedCurrentDayCount() {
+      return resolveDayCountEntry(this.currentDayCount) || this.legacyDayCount
+    },
+    daysSince() {
+      return this.isPickerVisible || !this.resolvedCurrentDayCount
+        ? null
+        : this.resolvedCurrentDayCount.days
+    },
+    reason() {
+      return this.resolvedCurrentDayCount ? this.resolvedCurrentDayCount.why : null
+    },
+    hasDayCount() {
+      return Boolean(this.resolvedCurrentDayCount)
+    },
+    isPickerVisible() {
+      return this.mode !== 'view'
+    },
+    buttonDisplay() {
+      return this.hasDayCount && !this.isPickerVisible
+    },
+    pickerDayCount() {
+      return this.mode === 'edit' ? this.currentDayCount : null
+    },
+    pickerKey() {
+      const currentId = this.currentDayCount && this.currentDayCount.id
+        ? this.currentDayCount.id
+        : 'new'
+      return `${this.mode}-${currentId}-${this.dayCounts.length}`
+    },
+    useStoredPickerSelections() {
+      return this.mode === 'create'
+    },
+    showCancelRemove() {
+      return this.mode === 'add' || this.dayCounts.length > 1
+    },
+    canNavigatePrevious() {
+      return !this.isPickerVisible && this.currentDayCountIndex > 0
+    },
+    canNavigateNext() {
+      return !this.isPickerVisible && this.currentDayCountIndex < this.dayCounts.length - 1
+    }
+  },
   mounted() {
     const applied = this.applyDayCountFromUrl()
     if (!applied) {
       this.refreshDayCountFromStorage()
+    }
+    if (!this.hasDayCount) {
+      this.mode = 'create'
     }
     this.refreshTodayLabel()
     this.updateTodaysDayFromSelections()
@@ -110,31 +181,157 @@ export default {
         const computedReason = resolveReason(parsed.reason, parsed.otherReason)
         if (!Number.isFinite(days) || days < 0 || !computedReason) return false
 
-        persistSelections({
+        if (!hasSelectedDate) {
+          persistDayCount({ days, why: computedReason })
+          this.dayCounts = []
+          this.currentDayCountIndex = 0
+          this.legacyDayCount = { days, why: computedReason }
+          this.mode = 'view'
+          this.syncNativeWidgetDayCount(days)
+          return true
+        }
+
+        const nextDayCount = createDayCountEntry({
           reason: parsed.reason,
           otherReason: parsed.otherReason,
-          month: parsed.month,
-          day: parsed.day,
-          year: parsed.year
+          selectedDate: {
+            year: parsed.year,
+            month: parsed.month,
+            day: parsed.day
+          }
         })
+        if (!nextDayCount) return false
 
+        const state = persistDayCounterState({
+          dayCounts: [nextDayCount],
+          currentIndex: 0
+        })
+        if (!this.hydrateDayCounterState(state)) return false
         persistDayCount({ days, why: computedReason })
         this.syncNativeWidgetDayCount(days)
-
-        this.daysSince = days
-        this.reason = computedReason
-        this.currentComponent = 'PickerGroup'
         return true
       } catch (e) {
         return false
       }
     },
-    updateDays({ days, why }) {
-      this.daysSince = days
-      this.reason = why
+    hydrateDayCounterState(state) {
+      if (!state || !Array.isArray(state.dayCounts) || state.dayCounts.length === 0) {
+        return false
+      }
+
+      this.dayCounts = state.dayCounts
+      this.currentDayCountIndex = state.currentIndex || 0
+      this.legacyDayCount = null
       this.currentComponent = 'PickerGroup'
+      this.mode = resolveDayCountEntry(this.currentDayCount) ? 'view' : 'create'
+      return true
+    },
+    persistActiveDayCounterState() {
+      if (this.dayCounts.length === 0) return null
+
+      const state = persistDayCounterState({
+        dayCounts: this.dayCounts,
+        currentIndex: this.currentDayCountIndex
+      })
+      if (!state) return null
+
+      this.hydrateDayCounterState(state)
+      const resolved = this.resolvedCurrentDayCount
+      if (resolved) {
+        persistDayCount({ days: resolved.days, why: resolved.why })
+        this.syncNativeWidgetDayCount(resolved.days)
+      }
       this.updateTodaysDayFromSelections()
-      this.syncNativeWidgetDayCount(days)
+      return state
+    },
+    saveDayCount(payload) {
+      const existingDayCount = this.mode === 'edit' ? this.currentDayCount : null
+      const nextDayCount = createDayCountEntry({
+        ...existingDayCount,
+        reason: payload.reason,
+        otherReason: payload.otherReason,
+        selectedDate: payload.selectedDate
+      })
+      const resolved = resolveDayCountEntry(nextDayCount)
+      if (!nextDayCount || !resolved) return
+
+      let nextDayCounts = this.dayCounts.slice()
+      let nextIndex = this.currentDayCountIndex
+
+      if (this.mode === 'add') {
+        nextDayCounts.push(nextDayCount)
+        nextIndex = nextDayCounts.length - 1
+      } else if (this.mode === 'edit' && this.currentDayCount) {
+        nextDayCounts[nextIndex] = nextDayCount
+      } else {
+        nextDayCounts = [nextDayCount]
+        nextIndex = 0
+      }
+
+      const state = persistDayCounterState({
+        dayCounts: nextDayCounts,
+        currentIndex: nextIndex
+      })
+      if (!this.hydrateDayCounterState(state)) return
+
+      this.mode = 'view'
+      persistDayCount({ days: resolved.days, why: resolved.why })
+      this.updateTodaysDayFromSelections()
+      this.syncNativeWidgetDayCount(resolved.days)
+    },
+    startEditDayCount() {
+      if (!this.hasDayCount) return
+
+      this.mode = 'edit'
+    },
+    startAddDayCount() {
+      if (!this.hasDayCount) return
+
+      this.mode = 'add'
+    },
+    handlePickerCancel() {
+      if (this.mode === 'add') {
+        this.mode = 'view'
+        return
+      }
+
+      if (this.dayCounts.length > 1) {
+        this.removeCurrentDayCount()
+        return
+      }
+
+      this.mode = this.hasDayCount ? 'view' : 'create'
+    },
+    removeCurrentDayCount() {
+      if (this.dayCounts.length <= 1) return
+
+      const removedIndex = this.currentDayCountIndex
+      const nextDayCounts = this.dayCounts.filter((_, index) => index !== removedIndex)
+      this.dayCounts = nextDayCounts
+      this.currentDayCountIndex = Math.min(removedIndex, nextDayCounts.length - 1)
+      this.mode = 'view'
+      this.persistActiveDayCounterState()
+    },
+    selectDayCount(index) {
+      const nextIndex = Number(index)
+      if (
+        this.isPickerVisible ||
+        !Number.isInteger(nextIndex) ||
+        nextIndex < 0 ||
+        nextIndex >= this.dayCounts.length ||
+        nextIndex === this.currentDayCountIndex
+      ) {
+        return
+      }
+
+      this.currentDayCountIndex = nextIndex
+      this.persistActiveDayCounterState()
+    },
+    navigateDayCount(delta) {
+      const direction = Number(delta)
+      if (!Number.isInteger(direction) || direction === 0) return
+
+      this.selectDayCount(this.currentDayCountIndex + direction)
     },
     openDrawer() {
       if (this.isExtensionBuild) return
@@ -144,19 +341,20 @@ export default {
       this.today = formatLongDate()
     },
     refreshDayCountFromStorage() {
-      const resolved = resolveDayCountFromSelections()
-      if (resolved) {
-        this.daysSince = resolved.days
-        this.reason = resolved.why
-        this.currentComponent = 'PickerGroup'
-        persistDayCount(resolved)
-        this.syncNativeWidgetDayCount(resolved.days)
+      const state = readDayCounterState()
+      if (state && this.hydrateDayCounterState(state)) {
+        const resolved = this.resolvedCurrentDayCount
+        if (resolved) {
+          persistDayCount({ days: resolved.days, why: resolved.why })
+          this.syncNativeWidgetDayCount(resolved.days)
+        }
         return
       }
+
       const cached = readDayCount()
       if (cached) {
-        this.daysSince = cached.days
-        this.reason = cached.why
+        this.legacyDayCount = cached
+        this.mode = 'view'
         this.syncNativeWidgetDayCount(cached.days)
       }
     },
@@ -185,7 +383,9 @@ export default {
     },
     handleAppResumed() {
       this.refreshTodayLabel()
-      this.refreshDayCountFromStorage()
+      if (!this.isPickerVisible) {
+        this.refreshDayCountFromStorage()
+      }
       this.updateTodaysDayFromSelections()
     },
     updateTodaysDayFromSelections() {
@@ -387,7 +587,7 @@ export default {
   cursor: pointer;
   border-radius:20px !important;
   transition-duration: 2s;
-  line-height:30px !important;
+  line-height:16px !important;
   font-family: inherit !important;
   font-size: inherit !important;
   text-transform: none !important;

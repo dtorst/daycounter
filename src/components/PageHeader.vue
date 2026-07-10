@@ -1,13 +1,28 @@
 <template>
   <header :class="{ 'ios-header': isIos }">
     <div class="logo">
-      <a href="#">
+      <a href="#" @click.prevent="clickLogo">
         <img src="../assets/daycounter-logo.svg" alt="Daycounter" height="34px" />
       </a>
+      <div v-if="showDayCountDots" class="daycount-dots" aria-label="Daycounts">
+        <button
+          v-for="index in dayCountCount"
+          :key="index"
+          class="daycount-dot"
+          :class="{ active: index - 1 === currentDayCountIndex }"
+          type="button"
+          :aria-label="`Show daycount ${index}`"
+          :aria-current="index - 1 === currentDayCountIndex ? 'true' : undefined"
+          @click="clickDayCountDot(index - 1)"
+        />
+      </div>
     </div>
     <div v-if="!mobile" class="d-flex justify-end me-4">
       <VFadeTransition>
-        <VBtn class="text-capitalize" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button" prepend-icon="mdi-calendar-edit">Update</VBtn>
+        <VBtn v-if="showAddButton" style="width: 36px; height: 36px;" @click="clickAddDayCounter" color="primary" size="small" variant="outlined" icon="mdi-plus" type="button"/>
+      </VFadeTransition>
+      <VFadeTransition>
+        <VBtn class="text-capitalize ms-4" color="primary" variant="outlined" rounded v-if="buttonDisplay" @click='clickUpdate()' type="button" prepend-icon="mdi-calendar-edit">Update</VBtn>
       </VFadeTransition>
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" location="bottom" text="Link copied!">
         <template #activator="{ props }">
@@ -16,7 +31,6 @@
           </VFadeTransition>
         </template>
       </VTooltip>
-      <VBtn v-if="showInfoMenu" @click='clickOpenDrawer()' color="primary" class="ms-2" size="small" variant="text" icon="mdi-menu" type="button"/>
     </div>    
     <div v-else class="d-flex justify-end me-2">
       <VFadeTransition>
@@ -29,9 +43,23 @@
           </VFadeTransition>
         </template>
       </VTooltip>
-      <VBtn v-if="showInfoMenu" @click='clickOpenDrawer()' color="primary" class="ms-1" size="small" variant="text" icon="mdi-menu" type="button"/>
+      <VFadeTransition>
+        <VBtn v-if="showAddButton" @click="clickAddDayCounter" color="primary" class="ms-1" size="small" variant="text" icon="mdi-plus" type="button"/>
+      </VFadeTransition>
     </div>
   </header>
+  <VBtn
+    v-if="showInfoMenu && !mobile"
+    class="info-menu-fab"
+    color="primary"
+    size="x-small"
+    variant="outlined"
+    icon="mdi-help"
+    type="button"
+    aria-label="Open Daycounter information"
+    style="position: fixed; right: 16px; bottom:16px;"
+    @click="clickOpenDrawer"
+  />
 </template>
 
 <script>
@@ -46,8 +74,25 @@ export default {
     showInfoMenu: {
       type: Boolean,
       default: true
+    },
+    showAddButton: {
+      type: Boolean,
+      default: false
+    },
+    dayCountCount: {
+      type: Number,
+      default: 0
+    },
+    currentDayCountIndex: {
+      type: Number,
+      default: 0
+    },
+    showDayCountDots: {
+      type: Boolean,
+      default: false
     }
   },
+  emits: ['buttonClicked', 'openDrawer', 'addDayCounter', 'selectDayCount'],
   data() {
     return {
       isCopied: false,
@@ -72,10 +117,21 @@ export default {
 		clickUpdate() {
 			this.$emit('buttonClicked')
 		},
+    clickLogo() {
+      if (this.mobile) {
+        this.clickOpenDrawer()
+      }
+    },
 		clickOpenDrawer() {
       if (!this.showInfoMenu) return
 			this.$emit('openDrawer')
 		},
+    clickAddDayCounter() {
+      this.$emit('addDayCounter')
+    },
+    clickDayCountDot(index) {
+      this.$emit('selectDayCount', index)
+    },
     buildShareUrl() {
       // Delegate to shared util
       try {
@@ -139,6 +195,39 @@ header.ios-header {
   width:200px;
   height:34px;
   margin-top: 8px;
+}
+
+.daycount-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 4px;
+  padding-left: 2px;
+}
+
+.daycount-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: width 150ms ease, background-color 150ms ease;
+}
+
+.daycount-dot.active {
+  width: 20px;
+  background: #fff;
+}
+
+.info-menu-fab {
+  border: 1px solid #F2EF88 !important;
+  border-radius: 999px !important;
+  color: #F2EF88 !important;
+  background: rgba(242,239,136,0) !important;
+  box-shadow: none !important;
+  z-index: var(--z-header, 60);
 }
 
 /* Ensure buttons maintain custom styling */

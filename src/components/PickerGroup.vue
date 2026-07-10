@@ -18,9 +18,11 @@
     </div>
     <div class="btn-container">
       <button class="calculate-days" @click="calculateDays"><VIcon size="20" style="line-height:30px;">mdi-white-balance-sunny</VIcon></button>
+      <button v-if="showCancelRemove" class="cancel-daycount" type="button" @click="cancelDayCount"><VIcon class="cancel-daycount-icon" size="18">mdi-close</VIcon></button>
     </div>
   </div>
   <div v-else class="picker-group mobile">
+    <button v-if="showCancelRemove" class="cancel-daycount mobile-cancel-daycount" type="button" @click="cancelDayCount"><VIcon class="cancel-daycount-icon" size="18">mdi-close</VIcon></button>
     <v-carousel
       v-model="currentIndex"
       style="width:100vw;height:70vh;"
@@ -87,18 +89,28 @@
   import { track } from '../utils/analytics';
   import { computeDaysSince, resolveReason } from '../shared/dayCount';
   import { parseQueryParams } from '../utils/params';
-  import {
-    persistDayCount,
-    persistSelections,
-    readDayCount,
-    readSelections
-  } from '../storage/browserStorage';
+  import { readSelections } from '../storage/browserStorage';
 
 export default {
   name: 'PickerGroup',
   components: {
     VueScrollPicker, // export VueScrollPicker is component
   },
+  props: {
+    initialDayCount: {
+      type: Object,
+      default: null,
+    },
+    showCancelRemove: {
+      type: Boolean,
+      default: false,
+    },
+    useStoredSelections: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  emits: ['dayCount', 'cancelDayCount'],
   data() {
     return {
       selectedYear: 2010,
@@ -112,16 +124,13 @@ export default {
     }
   },
   mounted() {
-    const appliedFromUrl = this.applySelectionsFromUrl();
-    if (!appliedFromUrl) {
-      this.restoreSelections();
-    }
-    if (this.reason === 'other') {
-      this.focusOtherInput();
-    }
+    this.prepareSelections();
     this.$nextTick(() => {
       this.hapticsReady = true;
     });
+  },
+  activated() {
+    this.prepareSelections();
   },
   watch: {
     selectedYear() {
@@ -141,6 +150,15 @@ export default {
       }
     },
     otherReason() { this.saveSelections(); },
+    initialDayCount: {
+      handler() {
+        this.prepareSelections();
+      },
+      deep: true,
+    },
+    useStoredSelections() {
+      this.prepareSelections();
+    },
   },
   computed: {
     mobile() {
@@ -174,6 +192,40 @@ export default {
     },
   },
   methods: {
+    prepareSelections() {
+      if (this.initialDayCount) {
+        this.applyDayCountToSelections(this.initialDayCount);
+      } else if (this.useStoredSelections) {
+        const appliedFromUrl = this.applySelectionsFromUrl();
+        if (!appliedFromUrl) {
+          this.restoreSelections();
+        }
+      } else {
+        this.resetSelectionsToDefault();
+      }
+
+      if (this.reason === 'other') {
+        this.focusOtherInput();
+      }
+    },
+    resetSelectionsToDefault() {
+      this.selectedYear = 2010;
+      this.selectedMonth = 6;
+      this.selectedDay = 15;
+      this.reason = 'alive';
+      this.otherReason = '';
+      this.currentIndex = 0;
+    },
+    applyDayCountToSelections(dayCount) {
+      if (!dayCount || !dayCount.selectedDate) return;
+
+      this.selectedYear = dayCount.selectedDate.year;
+      this.selectedMonth = dayCount.selectedDate.month;
+      this.selectedDay = dayCount.selectedDate.day;
+      this.reason = dayCount.reason || 'alive';
+      this.otherReason = dayCount.otherReason || '';
+      this.currentIndex = 0;
+    },
     canUseNativeHaptics() {
       return this.hapticsReady && Capacitor.isNativePlatform();
     },
@@ -209,13 +261,7 @@ export default {
       });
     },
     saveSelections() {
-      persistSelections({
-        reason: this.reason,
-        otherReason: this.otherReason,
-        month: this.selectedMonth,
-        day: this.selectedDay,
-        year: this.selectedYear,
-      });
+      // Draft picker changes are persisted only when the user calculates.
     },
     applySelectionsFromUrl() {
       try {
@@ -226,22 +272,6 @@ export default {
         if (parsed.month != null) this.selectedMonth = parsed.month;
         if (parsed.day != null) this.selectedDay = parsed.day;
         if (parsed.year != null) this.selectedYear = parsed.year;
-        // If days are provided via URL, prime localStorage daycounterDayCount
-        if (typeof parsed.days === 'number') {
-          try {
-            const computedReason = resolveReason(this.reason, this.otherReason);
-            persistDayCount({ days: parsed.days, why: computedReason });
-          } catch (e) {
-            // ignore storage errors
-          }
-        }
-        persistSelections({
-          reason: this.reason,
-          otherReason: this.otherReason,
-          month: this.selectedMonth,
-          day: this.selectedDay,
-          year: this.selectedYear,
-        });
         return true;
       } catch (e) {
         return false;
@@ -261,11 +291,8 @@ export default {
         // ignore corrupt payloads
       }
     },
-    saveDayCount(dayCountData) {
-      persistDayCount(dayCountData);
-    },
-    restoreDayCount() {
-      return readDayCount();
+    cancelDayCount() {
+      this.$emit('cancelDayCount');
     },
     calculateDays() {
       this.triggerPickerHaptic();
@@ -273,13 +300,20 @@ export default {
       
       const computedReason = resolveReason(this.reason, this.otherReason);
 
-      // Save the dayCount data to localStorage
-      this.saveDayCount({ 'days': days, 'why': computedReason });
-
       // Track finalized reason selection (includes otherReason if provided)
       track('reason_finalized', { reason: computedReason });
 
-      this.$emit('dayCount', { 'days':days, 'why': computedReason });
+      this.$emit('dayCount', {
+        days,
+        why: computedReason,
+        reason: this.reason,
+        otherReason: this.otherReason,
+        selectedDate: {
+          year: this.selectedYear,
+          month: this.selectedMonth,
+          day: this.selectedDay,
+        },
+      });
       this.currentIndex = 0;
     }
   },
@@ -417,7 +451,16 @@ export default {
 .btn-container {
   height:15em;
   align-content: center;
-  width:6rem;
+  width: auto;
+  min-width: 6rem;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-container .calculate-days {
+  flex: 0 0 96px;
 }
 
 .calculate-days :hover {
@@ -432,6 +475,37 @@ export default {
   border:1px solid #F2EF88 !important;
   line-height:44px !important;
   font-size:22px !important;
+}
+
+.cancel-daycount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  width: 36px;
+  flex: 0 0 36px;
+  border: 1px solid #F2EF88;
+  border-radius: 999px;
+  color: #F2EF88;
+  opacity: 0.5;
+  background: rgba(242,239,136,0);
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.cancel-daycount:hover {
+  opacity: 0.8;
+}
+
+.cancel-daycount .cancel-daycount-icon {
+  color: #F2EF88 !important;
+}
+
+.mobile-cancel-daycount {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
 }
 
 /* When other is active, visually hide the selected picker item so the input appears in its place */

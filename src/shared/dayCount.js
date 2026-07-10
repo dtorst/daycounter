@@ -1,4 +1,4 @@
-export const DAYCOUNTER_SCHEMA_VERSION = 1
+export const DAYCOUNTER_SCHEMA_VERSION = 2
 export const DEFAULT_SKIN_ID = 'classic-sunrise'
 export const MS_PER_DAY = 86400000
 
@@ -67,22 +67,30 @@ export function computeDaysSinceSelectedDate(selectedDate, today = new Date()) {
   return computeDaysSince(selectedDate.year, selectedDate.month, selectedDate.day, today)
 }
 
-export function createDayCounterState(input = {}) {
-  const selectedDate = normalizeSelectedDate(input.selectedDate || input)
+export function createDayCountId() {
+  return `daycount-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+export function createDayCountEntry(input = {}) {
+  const source = input && typeof input === 'object' ? input : {}
+  const selectedDate = normalizeSelectedDate(source.selectedDate || source)
   if (!selectedDate) return null
 
-  const rawReason = typeof input.reason === 'string' ? input.reason.trim() : ''
+  const rawReason = typeof source.reason === 'string' ? source.reason.trim() : ''
   const reason = rawReason === 'other...' ? 'other' : rawReason
-  const otherReason = typeof input.otherReason === 'string' ? input.otherReason.trim() : ''
-  const skinId = typeof input.skinId === 'string' && input.skinId.trim()
-    ? input.skinId.trim()
+  const otherReason = typeof source.otherReason === 'string' ? source.otherReason.trim() : ''
+  const skinId = typeof source.skinId === 'string' && source.skinId.trim()
+    ? source.skinId.trim()
     : DEFAULT_SKIN_ID
-  const updatedAt = typeof input.updatedAt === 'string' && input.updatedAt
-    ? input.updatedAt
+  const updatedAt = typeof source.updatedAt === 'string' && source.updatedAt
+    ? source.updatedAt
     : new Date().toISOString()
+  const id = typeof source.id === 'string' && source.id.trim()
+    ? source.id.trim()
+    : createDayCountId()
 
   return {
-    schemaVersion: DAYCOUNTER_SCHEMA_VERSION,
+    id,
     reason,
     otherReason,
     selectedDate,
@@ -91,41 +99,96 @@ export function createDayCounterState(input = {}) {
   }
 }
 
+export function clampDayCountIndex(index, dayCounts = []) {
+  if (!Array.isArray(dayCounts) || dayCounts.length === 0) return 0
+
+  const normalizedIndex = Number(index)
+  if (!Number.isInteger(normalizedIndex)) return 0
+
+  return Math.min(Math.max(normalizedIndex, 0), dayCounts.length - 1)
+}
+
+export function createDayCounterState(input = {}) {
+  const source = input && typeof input === 'object' ? input : {}
+  const rawDayCounts = Array.isArray(source.dayCounts) ? source.dayCounts : [source]
+  const dayCounts = rawDayCounts
+    .map((dayCount) => createDayCountEntry(dayCount))
+    .filter(Boolean)
+
+  if (dayCounts.length === 0) return null
+
+  const updatedAt = typeof source.updatedAt === 'string' && source.updatedAt
+    ? source.updatedAt
+    : new Date().toISOString()
+  const currentIndex = clampDayCountIndex(source.currentIndex, dayCounts)
+
+  return {
+    schemaVersion: DAYCOUNTER_SCHEMA_VERSION,
+    dayCounts,
+    currentIndex,
+    updatedAt
+  }
+}
+
 export function migrateDayCounterState(payload) {
   if (!payload || typeof payload !== 'object') return null
 
-  if (payload.schemaVersion === DAYCOUNTER_SCHEMA_VERSION) {
+  if (payload.schemaVersion === DAYCOUNTER_SCHEMA_VERSION || Array.isArray(payload.dayCounts)) {
     return createDayCounterState(payload)
   }
 
   return createDayCounterState(payload)
 }
 
-export function resolveDayCountFromState(state, today = new Date()) {
+export function getCurrentDayCountEntry(state) {
   const canonicalState = migrateDayCounterState(state)
   if (!canonicalState) return null
 
-  const days = computeDaysSinceSelectedDate(canonicalState.selectedDate, today)
-  const why = resolveReason(canonicalState.reason, canonicalState.otherReason)
+  return canonicalState.dayCounts[canonicalState.currentIndex] || canonicalState.dayCounts[0] || null
+}
+
+export function resolveDayCountEntry(entry, today = new Date()) {
+  const dayCount = createDayCountEntry(entry)
+  if (!dayCount) return null
+
+  const days = computeDaysSinceSelectedDate(dayCount.selectedDate, today)
+  const why = resolveReason(dayCount.reason, dayCount.otherReason)
   if (!Number.isFinite(days) || days < 0 || !why) return null
 
   return {
+    id: dayCount.id,
     days,
     why,
-    skinId: canonicalState.skinId
+    skinId: dayCount.skinId,
+    selectedDate: dayCount.selectedDate,
+    reason: dayCount.reason,
+    otherReason: dayCount.otherReason
   }
 }
 
-export function isAnniversaryToday(state, today = new Date()) {
+export function resolveDayCountsFromState(state, today = new Date()) {
   const canonicalState = migrateDayCounterState(state)
-  if (!canonicalState) return false
+  if (!canonicalState) return []
+
+  return canonicalState.dayCounts
+    .map((dayCount) => resolveDayCountEntry(dayCount, today))
+    .filter(Boolean)
+}
+
+export function resolveDayCountFromState(state, today = new Date()) {
+  return resolveDayCountEntry(getCurrentDayCountEntry(state), today)
+}
+
+export function isAnniversaryToday(state, today = new Date()) {
+  const currentDayCount = getCurrentDayCountEntry(state)
+  if (!currentDayCount) return false
 
   const currentDate = today instanceof Date ? today : new Date(today)
   if (Number.isNaN(currentDate.getTime())) return false
 
   return (
-    canonicalState.selectedDate.month === currentDate.getMonth() + 1 &&
-    canonicalState.selectedDate.day === currentDate.getDate()
+    currentDayCount.selectedDate.month === currentDate.getMonth() + 1 &&
+    currentDayCount.selectedDate.day === currentDate.getDate()
   )
 }
 
@@ -136,6 +199,6 @@ export function buildWidgetSnapshot(state, today = new Date()) {
 
   return {
     days: resolved.days,
-    skinId: canonicalState.skinId
+    skinId: resolved.skinId
   }
 }

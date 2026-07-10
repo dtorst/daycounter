@@ -1,6 +1,8 @@
 import {
   buildWidgetSnapshot,
+  createDayCountEntry,
   createDayCounterState,
+  getCurrentDayCountEntry,
   migrateDayCounterState,
   resolveDayCountFromState
 } from '../shared/dayCount'
@@ -51,14 +53,15 @@ function writeJson(key, value) {
 }
 
 function stateToLegacySelections(state) {
-  if (!state || !state.selectedDate) return null
+  const currentDayCount = getCurrentDayCountEntry(state)
+  if (!currentDayCount || !currentDayCount.selectedDate) return null
 
   return {
-    reason: String(state.reason ?? ''),
-    otherReason: String(state.otherReason ?? ''),
-    selectedMonth: String(state.selectedDate.month ?? ''),
-    selectedDay: String(state.selectedDate.day ?? ''),
-    selectedYear: String(state.selectedDate.year ?? '')
+    reason: String(currentDayCount.reason ?? ''),
+    otherReason: String(currentDayCount.otherReason ?? ''),
+    selectedMonth: String(currentDayCount.selectedDate.month ?? ''),
+    selectedDay: String(currentDayCount.selectedDate.day ?? ''),
+    selectedYear: String(currentDayCount.selectedDate.year ?? '')
   }
 }
 
@@ -75,15 +78,29 @@ export function persistDayCounterState(input) {
   if (!state) return null
 
   writeJson(DAYCOUNTER_STORAGE_KEYS.canonicalState, state)
+  const legacySelections = stateToLegacySelections(state)
+  if (legacySelections) {
+    writeJson(DAYCOUNTER_STORAGE_KEYS.legacySelections, legacySelections)
+  }
   persistWidgetSnapshotForState(state)
   return state
 }
 
 export function readDayCounterState() {
+  const rawCanonicalState = readJson(DAYCOUNTER_STORAGE_KEYS.canonicalState)
   const canonicalState = migrateDayCounterState(
-    readJson(DAYCOUNTER_STORAGE_KEYS.canonicalState)
+    rawCanonicalState
   )
-  if (canonicalState) return canonicalState
+  if (canonicalState) {
+    if (
+      !rawCanonicalState ||
+      rawCanonicalState.schemaVersion !== canonicalState.schemaVersion ||
+      !Array.isArray(rawCanonicalState.dayCounts)
+    ) {
+      writeJson(DAYCOUNTER_STORAGE_KEYS.canonicalState, canonicalState)
+    }
+    return canonicalState
+  }
 
   const legacyState = migrateDayCounterState(
     readJson(DAYCOUNTER_STORAGE_KEYS.legacySelections)
@@ -107,6 +124,27 @@ export function persistSelections({ reason, otherReason, month, day, year, skinI
 
   writeJson(DAYCOUNTER_STORAGE_KEYS.legacySelections, legacyPayload)
 
+  const currentState = readDayCounterState()
+  if (currentState) {
+    const currentDayCount = getCurrentDayCountEntry(currentState) || {}
+    const nextDayCount = createDayCountEntry({
+      ...currentDayCount,
+      reason,
+      otherReason,
+      selectedDate: { year, month, day },
+      skinId
+    })
+    if (!nextDayCount) return null
+
+    const nextDayCounts = currentState.dayCounts.slice()
+    nextDayCounts[currentState.currentIndex] = nextDayCount
+    return persistDayCounterState({
+      ...currentState,
+      dayCounts: nextDayCounts,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
   return persistDayCounterState({
     reason,
     otherReason,
@@ -116,13 +154,16 @@ export function persistSelections({ reason, otherReason, month, day, year, skinI
 }
 
 export function readSelections() {
+  const state = readDayCounterState()
+  const selections = stateToLegacySelections(state)
+  if (selections) return selections
+
   const legacySelections = readJson(DAYCOUNTER_STORAGE_KEYS.legacySelections)
   if (legacySelections && typeof legacySelections === 'object') {
     return legacySelections
   }
 
-  const state = readDayCounterState()
-  return stateToLegacySelections(state)
+  return null
 }
 
 export function persistDayCount({ days, why } = {}) {
@@ -146,6 +187,9 @@ export function persistDayCount({ days, why } = {}) {
 }
 
 export function readDayCount() {
+  const resolved = resolveDayCountFromStorage()
+  if (resolved) return resolved
+
   const legacyDayCount = readJson(DAYCOUNTER_STORAGE_KEYS.legacyDayCount)
   if (
     legacyDayCount &&
@@ -157,7 +201,7 @@ export function readDayCount() {
     return legacyDayCount
   }
 
-  return resolveDayCountFromStorage()
+  return null
 }
 
 export function resolveDayCountFromStorage() {
