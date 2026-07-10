@@ -2,9 +2,9 @@
   <VApp>
     <DrawerComponent v-if="!isExtensionBuild" v-model="drawer" />
     <VMain>
-      <div id="app-shell" :class="{ night: !daysSince }">
+      <div id="app-shell" :class="{ night: isInitialized && !daysSince }">
         <div class="scenery-layer">
-          <PageScenery :rayDisplay="daysSince" />
+          <PageScenery v-if="isInitialized" :rayDisplay="daysSince" />
         </div>
         <div class="content-layer">
           <InteractableLayer
@@ -101,6 +101,7 @@ export default {
       today: formatLongDate(),
       drawer: false,
       isExtensionBuild: IS_EXTENSION_BUILD,
+      isInitialized: false,
       resumeSyncTimer: null
     }
   },
@@ -160,6 +161,7 @@ export default {
     }
     this.refreshTodayLabel()
     this.updateTodaysDayFromSelections()
+    this.isInitialized = true
     document.addEventListener('visibilitychange', this.onVisibilityChange)
     window.addEventListener('focus', this.onWindowFocus)
     window.addEventListener('pageshow', this.onPageShow)

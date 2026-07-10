@@ -1,14 +1,17 @@
 <template>
-  <div class="interactable-layer">
+  <div
+    class="interactable-layer"
+    :class="{ 'is-readout-active': canHandleSwipe }"
+    @touchstart.passive="onTouchStart"
+    @touchend.passive="onTouchEnd"
+    @pointerdown="onPointerStart"
+    @pointerup="onPointerEnd"
+  >
     <div class="interactable">
       <div
         v-if="!showPicker && daysSince"
         class="readout"
         :class="mobile ? '' : 'mt-6'"
-        @touchstart.passive="onTouchStart"
-        @touchend.passive="onTouchEnd"
-        @pointerdown="onPointerStart"
-        @pointerup="onPointerEnd"
       >
         <h3 v-if="!mobile" style="margin-bottom:0px;">It's {{ today }} </h3>
         <h3 v-else style="line-height:1.5;margin-bottom:16px;">It's {{ today }} </h3>
@@ -130,6 +133,9 @@ export default {
         digit: this.daysSince,
       };
     },
+    canHandleSwipe() {
+      return !this.showPicker && Boolean(this.daysSince);
+    },
   },
   methods: {
     onDayCount(payload) {
@@ -149,23 +155,29 @@ export default {
       }
     },
     onTouchStart(event) {
+      if (!this.canHandleSwipe) return;
+
       const touch = event.changedTouches && event.changedTouches[0];
       if (!touch) return;
 
       this.startSwipe(touch.clientX, touch.clientY);
     },
     onTouchEnd(event) {
+      if (!this.canHandleSwipe) return;
+
       const touch = event.changedTouches && event.changedTouches[0];
       if (!touch || this.swipeStartX == null || this.swipeStartY == null) return;
 
       this.finishSwipe(touch.clientX, touch.clientY);
     },
     onPointerStart(event) {
+      if (!this.canHandleSwipe) return;
       if (event.pointerType === 'touch') return;
 
       this.startSwipe(event.clientX, event.clientY);
     },
     onPointerEnd(event) {
+      if (!this.canHandleSwipe) return;
       if (event.pointerType === 'touch') return;
 
       this.finishSwipe(event.clientX, event.clientY);
@@ -203,6 +215,11 @@ export default {
   margin-top:60px;
   justify-content: center;
   pointer-events: none;
+}
+
+.interactable-layer.is-readout-active {
+  pointer-events: auto;
+  touch-action: pan-y;
 }
 
 .interactable {

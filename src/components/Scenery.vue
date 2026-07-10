@@ -1,5 +1,11 @@
 <template>
-  <div class="scenery-canvas" :class="{ night: isNight }">
+  <div
+    class="scenery-canvas"
+    :class="{
+      night: isNight,
+      'entering-day-scene': isEnteringDayScene
+    }"
+  >
     <div class="moon">
       <div></div>
       <div></div>
@@ -15,14 +21,14 @@
       <div></div>
     </div>
     <div class="scene">
-      <div class="hills">
+      <div v-if="showHills" class="hills">
         <div></div>
         <div></div>
         <div></div>
         <div></div>
       </div>
-      <div class="sun"></div>
-      <div class="water"></div>
+      <div v-if="showSun" class="sun"></div>
+      <div v-if="showWater" class="water"></div>
     </div>
     <div class="rays-anchor">
       <img src="../assets/rays.svg" loading="eager" alt="" class="rays">
@@ -39,9 +45,62 @@ export default {
       default: null,
     },
   },
+  data() {
+    return {
+      hasPlayedDaySceneIntro: false,
+      isEnteringDayScene: false,
+      daySceneIntroPhase: 0,
+      daySceneIntroTimers: [],
+    };
+  },
   computed: {
     isNight() {
       return !this.rayDisplay;
+    },
+    showHills() {
+      return this.isNight || this.daySceneIntroPhase >= 1;
+    },
+    showWater() {
+      return this.isNight || this.daySceneIntroPhase >= 2;
+    },
+    showSun() {
+      return this.isNight || this.daySceneIntroPhase >= 3;
+    },
+  },
+  watch: {
+    rayDisplay: {
+      immediate: true,
+      handler(value) {
+        if (value && !this.hasPlayedDaySceneIntro) {
+          this.playDaySceneIntro();
+        }
+      },
+    },
+  },
+  beforeUnmount() {
+    this.clearDaySceneIntroTimers();
+  },
+  methods: {
+    playDaySceneIntro() {
+      this.hasPlayedDaySceneIntro = true;
+      this.clearDaySceneIntroTimers();
+      this.daySceneIntroPhase = 0;
+      this.isEnteringDayScene = true;
+      requestAnimationFrame(() => {
+        this.daySceneIntroPhase = 1;
+        this.daySceneIntroTimers = [
+          setTimeout(() => { this.daySceneIntroPhase = 2; }, 280),
+          setTimeout(() => { this.daySceneIntroPhase = 3; }, 560),
+          setTimeout(() => {
+            this.isEnteringDayScene = false;
+            this.daySceneIntroTimers = [];
+          }, 1000),
+        ];
+      });
+    },
+    clearDaySceneIntroTimers() {
+      this.daySceneIntroTimers.forEach((timer) => clearTimeout(timer));
+      this.daySceneIntroTimers = [];
     },
   },
 };
@@ -78,6 +137,17 @@ export default {
   animation: spin 200s linear infinite;
 }
 
+.scenery-canvas.entering-day-scene .rays {
+  opacity: 1;
+  -webkit-transition: none;
+  transition: none;
+}
+
+.scenery-canvas.entering-day-scene .rays-anchor {
+  -webkit-animation: rays-rise-in 440ms cubic-bezier(0.18, 0.9, 0.28, 1.18) 560ms both;
+  animation: rays-rise-in 440ms cubic-bezier(0.18, 0.9, 0.28, 1.18) 560ms both;
+}
+
 .rays-anchor {
   position: absolute;
   left: var(--scenery-sun-x, 50%);
@@ -91,6 +161,39 @@ export default {
   height: 1px;
   overflow: visible;
   z-index: var(--z-scenery-rays, 5);
+}
+
+@keyframes rays-rise-in {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, 200px);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@-webkit-keyframes rays-rise-in {
+  0% {
+    opacity: 0.55;
+    -webkit-transform: translate(-50%, 200px);
+    transform: translate(-50%, 200px);
+  }
+  70% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -10px);
+    transform: translate(-50%, -10px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+  }
 }
 
 @-moz-keyframes spin {
@@ -222,8 +325,49 @@ export default {
 
 .hills div:nth-child(n) {
   position: absolute;
+  --hill-transform: translate(0, 0);
+  transform: var(--hill-transform);
+  transform-origin: 50% 100%;
   -webkit-transition: background-color 1s 0.6s ease;
   transition: background-color 1s 0.6s ease;
+}
+
+.scenery-canvas.entering-day-scene .hills div:nth-child(n) {
+  -webkit-animation: hills-rise-in 420ms cubic-bezier(0.18, 0.9, 0.28, 1.22) both;
+  animation: hills-rise-in 420ms cubic-bezier(0.18, 0.9, 0.28, 1.22) both;
+}
+
+@keyframes hills-rise-in {
+  0% {
+    opacity: 0;
+    transform: var(--hill-transform) translateY(70px) scale(0.94);
+  }
+  68% {
+    opacity: 1;
+    transform: var(--hill-transform) translateY(-8px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: var(--hill-transform);
+  }
+}
+
+@-webkit-keyframes hills-rise-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: var(--hill-transform) translateY(70px) scale(0.94);
+    transform: var(--hill-transform) translateY(70px) scale(0.94);
+  }
+  68% {
+    opacity: 1;
+    -webkit-transform: var(--hill-transform) translateY(-8px) scale(1.02);
+    transform: var(--hill-transform) translateY(-8px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: var(--hill-transform);
+    transform: var(--hill-transform);
+  }
 }
 
 .hills div:nth-child(1) {
@@ -323,11 +467,50 @@ export default {
   left: 25%;
   height: 8.25rem;
   bottom: 0;
+  transform-origin: 50% 100%;
 }
 
 .scenery-canvas.night .water {
   --myColor3: var(--scenery-water-top-night, #7fa1bb);
   --myColor4: var(--scenery-water-bottom-night, #1d425a);
+}
+
+.scenery-canvas.entering-day-scene .water {
+  -webkit-animation: water-rise-in 360ms cubic-bezier(0.18, 0.9, 0.28, 1.16) both;
+  animation: water-rise-in 360ms cubic-bezier(0.18, 0.9, 0.28, 1.16) both;
+}
+
+@keyframes water-rise-in {
+  0% {
+    opacity: 0;
+    transform: translateY(46px) scaleY(0.72);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(-5px) scaleY(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@-webkit-keyframes water-rise-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(46px) scaleY(0.72);
+    transform: translateY(46px) scaleY(0.72);
+  }
+  72% {
+    opacity: 1;
+    -webkit-transform: translateY(-5px) scaleY(1.04);
+    transform: translateY(-5px) scaleY(1.04);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0) scaleY(1);
+    transform: translateY(0) scaleY(1);
+  }
 }
 
 /* SUN */
@@ -347,6 +530,46 @@ export default {
   animation: pulse 5s ease infinite alternate;
   -webkit-transition: bottom 1.8s ease 0.4s;
   transition: bottom 1.8s ease 0.4s;
+}
+
+.scenery-canvas.entering-day-scene .sun {
+  -webkit-transition: none;
+  transition: none;
+  -webkit-animation: sun-rise-in 440ms cubic-bezier(0.18, 0.9, 0.28, 1.18) both, pulse 5s ease 440ms infinite alternate;
+  animation: sun-rise-in 440ms cubic-bezier(0.18, 0.9, 0.28, 1.18) both, pulse 5s ease 440ms infinite alternate;
+}
+
+@keyframes sun-rise-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(150px) scale(0.86);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@-webkit-keyframes sun-rise-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) translateY(150px) scale(0.86);
+    transform: translateX(-50%) translateY(150px) scale(0.86);
+  }
+  70% {
+    opacity: 1;
+    -webkit-transform: translateX(-50%) translateY(-10px) scale(1.04);
+    transform: translateX(-50%) translateY(-10px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
 @keyframes pulse {
@@ -372,10 +595,10 @@ export default {
     --scenery-sun-bottom: var(--scenery-sun-bottom-mobile, 6rem);
   }
 
-  .hills div:nth-child(1) { transform: translate(-138px, 12px); }
-  .hills div:nth-child(3) { transform: translate(85px, 42px); }
-  .hills div:nth-child(2) { transform: translate(-45px, 10px); }
-  .hills div:nth-child(4) { transform: translate(220px, 14px); }
+  .hills div:nth-child(1) { --hill-transform: translate(-138px, 12px); }
+  .hills div:nth-child(3) { --hill-transform: translate(85px, 42px); }
+  .hills div:nth-child(2) { --hill-transform: translate(-45px, 10px); }
+  .hills div:nth-child(4) { --hill-transform: translate(220px, 14px); }
 
   .water {
     left: 0;
@@ -403,6 +626,18 @@ export default {
 
   .scenery-canvas {
     --scenery-scene-bottom: var(--scenery-scene-bottom-mobile, -80px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scenery-canvas.entering-day-scene .hills div:nth-child(n),
+  .scenery-canvas.entering-day-scene .water,
+  .scenery-canvas.entering-day-scene .sun,
+  .scenery-canvas.entering-day-scene .rays-anchor {
+    -webkit-animation-duration: 1ms;
+    animation-duration: 1ms;
+    -webkit-animation-delay: 0ms;
+    animation-delay: 0ms;
   }
 }
 </style>
