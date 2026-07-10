@@ -34,6 +34,9 @@
     </div>    
     <div v-else class="d-flex justify-end me-2">
       <VFadeTransition>
+        <VBtn v-if="showAddButton" @click="clickAddDayCounter" color="primary" class="ms-1" size="small" variant="text" icon="mdi-plus" type="button"/>
+      </VFadeTransition>
+      <VFadeTransition>
         <VBtn color="primary" variant="text" size="small" icon="mdi-calendar-edit" v-if="buttonDisplay" @click='clickUpdate()' />
       </VFadeTransition>
       <VTooltip v-model="isCopied" :open-on-hover="false" :open-on-click="false" :open-on-focus="false" location="bottom" text="Link copied!">
@@ -43,9 +46,6 @@
           </VFadeTransition>
         </template>
       </VTooltip>
-      <VFadeTransition>
-        <VBtn v-if="showAddButton" @click="clickAddDayCounter" color="primary" class="ms-1" size="small" variant="text" icon="mdi-plus" type="button"/>
-      </VFadeTransition>
     </div>
   </header>
   <VBtn

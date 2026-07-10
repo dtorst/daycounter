@@ -15,6 +15,7 @@
         <h1 v-if="!mobile" style="margin-top:0px;">you&#8217;ve been {{ reason }} for </h1>
         <h1 v-else style="margin-top:0px;margin-bottom:16px;text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);">you&#8217;ve been {{ reason }} for </h1>
         <button
+          v-if="!mobile"
           class="daycount-chevron daycount-chevron-left"
           :class="{ visible: canNavigatePrevious }"
           :disabled="!canNavigatePrevious"
@@ -26,6 +27,7 @@
         </button>
         <flip-clock :options="flipOptions" />
         <button
+          v-if="!mobile"
           class="daycount-chevron daycount-chevron-right"
           :class="{ visible: canNavigateNext }"
           :disabled="!canNavigateNext"
