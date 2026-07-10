@@ -130,7 +130,7 @@ header {
 }
 
 header.ios-header {
-  margin-top: 32px;
+  margin-top: 40px;
 }
 
 .logo {
