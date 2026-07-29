@@ -37,6 +37,8 @@ public class DayCounterWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         let selectedDay = call.getInt("selectedDay")
         let hasSelectedDatePayload = selectedYear != nil || selectedMonth != nil || selectedDay != nil
 
+        defaults.set(days, forKey: daysKey)
+
         if hasSelectedDatePayload {
             guard let selectedYear, let selectedMonth, let selectedDay else {
                 call.reject("Selected date payload is incomplete")
@@ -48,19 +50,23 @@ public class DayCounterWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
                 return
             }
 
-            defaults.set(days, forKey: daysKey)
             defaults.set(selectedYear, forKey: selectedYearKey)
             defaults.set(selectedMonth, forKey: selectedMonthKey)
             defaults.set(selectedDay, forKey: selectedDayKey)
-        } else {
-            defaults.set(days, forKey: daysKey)
-            defaults.removeObject(forKey: selectedYearKey)
-            defaults.removeObject(forKey: selectedMonthKey)
-            defaults.removeObject(forKey: selectedDayKey)
         }
 
         defaults.synchronize()
-        NSLog("DayCounterWidgetBridge wrote daycounter.days=%d selectedDate=%@-%@-%@", days, selectedYear.map(String.init) ?? "nil", selectedMonth.map(String.init) ?? "nil", selectedDay.map(String.init) ?? "nil")
+
+        let storedYear = defaults.object(forKey: selectedYearKey) as? NSNumber
+        let storedMonth = defaults.object(forKey: selectedMonthKey) as? NSNumber
+        let storedDay = defaults.object(forKey: selectedDayKey) as? NSNumber
+        NSLog(
+            "DayCounterWidgetBridge wrote daycounter.days=%d selectedDate=%@-%@-%@",
+            days,
+            storedYear.map { String(describing: $0) } ?? "nil",
+            storedMonth.map { String(describing: $0) } ?? "nil",
+            storedDay.map { String(describing: $0) } ?? "nil"
+        )
 
         WidgetCenter.shared.reloadAllTimelines()
 
