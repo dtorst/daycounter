@@ -310,15 +310,17 @@ private struct AccessoryFlipDigitCard: View {
             Text(digit)
                 .font(.custom("Montserrat-Thin", size: layout.fontSize * scale).weight(.semibold))
                 .monospacedDigit()
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.black)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
-        }
-        .overlay {
+                .blendMode(.destinationOut)
+
             Rectangle()
-                .fill(Color.daycounterLockDivider)
+                .fill(Color.black)
                 .frame(height: max(1, scale))
+                .blendMode(.destinationOut)
         }
+        .compositingGroup()
         .frame(width: layout.cardWidth * scale, height: layout.cardHeight * scale)
     }
 }
@@ -493,7 +495,6 @@ private extension Color {
     static let daycounterSun = Color(red: 0.95, green: 0.94, blue: 0.53)
     static let daycounterNightHill = Color(red: 0.11, green: 0.11, blue: 0.11)
     static let daycounterNightLake = Color(red: 0.47, green: 0.58, blue: 0.64)
-    static let daycounterLockDivider = Color(red: 0.4, green: 0.4, blue: 0.4)
     static let daycounterLockCard = Color(red: 0.6, green: 0.6, blue: 0.6)
 }
 

@@ -1,10 +1,21 @@
 import { Capacitor, registerPlugin } from '@capacitor/core'
+import { getCurrentDayCountEntry } from '../shared/dayCount'
 
 const DayCounterWidgetBridge = registerPlugin('DayCounterWidgetBridge')
 
 function normalizeSelectedDate(input) {
-  const selectedDate = input && input.selectedDate ? input.selectedDate : input
-  if (!selectedDate || typeof selectedDate !== 'object') return null
+  if (!input || typeof input !== 'object') return null
+
+  let selectedDate = input.selectedDate || null
+  if (!selectedDate && Array.isArray(input.dayCounts)) {
+    const currentEntry = getCurrentDayCountEntry(input)
+    selectedDate = currentEntry && currentEntry.selectedDate
+      ? currentEntry.selectedDate
+      : null
+  }
+  if (!selectedDate) {
+    selectedDate = input
+  }
 
   const year = Number(selectedDate.year)
   const month = Number(selectedDate.month)

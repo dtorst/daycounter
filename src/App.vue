@@ -361,7 +361,10 @@ export default {
       }
     },
     syncNativeWidgetDayCount(days) {
-      syncNativeWidgetDayCount(days, readDayCounterState())
+      const selectedDate = this.currentDayCount && this.currentDayCount.selectedDate
+        ? this.currentDayCount.selectedDate
+        : null
+      syncNativeWidgetDayCount(days, selectedDate)
     },
     onVisibilityChange() {
       if (document.visibilityState === 'visible') {
